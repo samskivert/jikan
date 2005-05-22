@@ -18,26 +18,13 @@
 
 package com.samskivert.jikan;
 
-import org.eclipse.swt.widgets.Display;
-
-import com.samskivert.jikan.ui.JikanShell;
+import java.util.logging.Logger;
 
 /**
- * The main entry point for the Jikan application.
+ * Contains a log instance to be used by the application.
  */
-public class Jikan
+public class Log
 {
-    public static void main (String[] args)
-    {
-	Display display = new Display();
-        JikanShell shell = new JikanShell(display);
-        shell.setSize(300, 600);
-	shell.open();
-	while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-	}
-	display.dispose();
-    }
+    /** We dispatch our log messages through this logger. */
+    public static Logger log = Logger.getLogger("jikan");
 }

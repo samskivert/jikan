@@ -16,28 +16,31 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-package com.samskivert.jikan;
+package com.samskivert.jikan.data;
 
-import org.eclipse.swt.widgets.Display;
-
-import com.samskivert.jikan.ui.JikanShell;
+import java.util.Date;
 
 /**
- * The main entry point for the Jikan application.
+ * Contains the information on a particular item.
  */
-public class Jikan
+public class Item
 {
-    public static void main (String[] args)
+    public Item (Date when, String text)
     {
-	Display display = new Display();
-        JikanShell shell = new JikanShell(display);
-        shell.setSize(300, 600);
-	shell.open();
-	while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-	}
-	display.dispose();
+        _when = when;
+        _text = text;
     }
+
+    public String getText ()
+    {
+        return _text;
+    }
+
+    public void setText (String text)
+    {
+        _text = text;
+    }
+
+    protected Date _when;
+    protected String _text;
 }
