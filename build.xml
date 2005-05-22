@@ -1,0 +1,78 @@
+<!-- build configuration -->
+<project name="jikan" default="compile" basedir=".">
+
+  <!-- various basic settings -->
+  <property name="app.name" value="jikan"/>
+  <property name="src.dir" value="src/java"/>
+  <property name="deploy.dir" value="dist"/>
+  <property name="dist.jar" value="${app.name}.jar"/>
+
+  <!-- used when generating javadocs -->
+  <property name="javadoc.dir"  value="${deploy.dir}/docs"/>
+  <property name="doc.packages" value="com.samskivert.jikan.*"/>
+  <property name="doc.overview" value="com/samskivert/jikan/overview.html"/>
+  <property name="copy.pre"     value="Copyright &#169; 2005"/>
+  <property name="copyright.holder" value="Michael Bayne"/>
+  <property name="copy.post"    value="All Rights Reserved."/>
+
+  <!-- declare our classpath -->
+  <path id="clazzpath">
+    <fileset dir="lib" includes="**/*.jar"/>
+    <pathelement location="${deploy.dir}/classes"/>
+  </path>
+
+  <!-- prepares the application directories -->
+  <target name="prepare">
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}/classes"/>
+    <mkdir dir="${javadoc.dir}"/>
+    <!-- copy media and properties into the target directory -->
+    <copy todir="${deploy.dir}/classes">
+      <fileset dir="${src.dir}" includes="**/*.png"/>
+      <fileset dir="${src.dir}" includes="**/*.properties"/>
+    </copy>
+  </target>
+
+  <!-- cleans out the built application -->
+  <target name="clean">
+    <delete dir="${deploy.dir}"/>
+  </target>
+
+  <!-- build the java class files -->
+  <target name="compile" depends="prepare">
+    <javac srcdir="${src.dir}" destdir="${deploy.dir}/classes"
+           debug="on" optimize="off" deprecation="on"
+           classpathref="clazzpath" includeAntRuntime="no"/>
+  </target>
+
+  <!-- build the javadoc documentation -->
+  <target name="javadoc" depends="prepare">
+    <javadoc sourcepath="${src.dir}"
+             packagenames="${doc.packages}"
+             windowtitle="${app.name} API"
+             doctitle="${app.name} API"
+             overview="${src.dir}/${doc.overview}"
+             bottom="${copy.pre} ${copyright.holder} ${copy.post}"
+             destdir="${javadoc.dir}">
+      <classpath refid="clazzpath"/>
+      <link href="http://www.samskivert.com/code/samskivert/docs/api"/>
+      <link href="http://java.sun.com/products/jdk/1.4/docs/api"/>
+    </javadoc>
+  </target>
+
+  <!-- a target for rebuilding everything -->
+  <target name="all" depends="clean,prepare,compile,javadoc,dist"/>
+
+  <!-- builds our distribution files -->
+  <target name="dist" depends="prepare,compile">
+    <jar destfile="${deploy.dir}/${dist.jar}" manifest="lib/manifest.mf"
+         basedir="${deploy.dir}/classes"/>
+  </target>
+
+  <!-- optimizes, combines and removes dead code -->
+  <target name="proguard" depends="dist">
+    <taskdef resource="proguard/ant/task.properties"
+             classpath="lib/proguard.jar"/>
+    <proguard configuration="etc/jikan.pro"/>
+  </target>
+</project>
