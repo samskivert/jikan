@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
-import com.samskivert.jikan.Log;
 import com.samskivert.jikan.data.Item;
 
 /**
@@ -50,6 +49,6 @@ public class JikanShell extends Shell
         Group group = new Group(this, SWT.SHADOW_ETCHED_IN);
         group.setText("Bits!");
         group.setLayout(new FillLayout());
-        ItemList list = new ItemList(group, items);
+        ItemList list = new ItemList(group, "General", items);
     }
 }

@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
 
-import com.samskivert.jikan.Log;
 import com.samskivert.jikan.data.Item;
 
 /**

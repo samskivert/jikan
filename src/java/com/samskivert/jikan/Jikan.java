@@ -18,6 +18,8 @@
 
 package com.samskivert.jikan;
 
+import java.util.logging.Logger;
+
 import org.eclipse.swt.widgets.Display;
 
 import com.samskivert.jikan.ui.JikanShell;
@@ -27,17 +29,28 @@ import com.samskivert.jikan.ui.JikanShell;
  */
 public class Jikan
 {
+    /** We dispatch our log messages through this logger. */
+    public static Logger log = Logger.getLogger("jikan");
+
+    /** Provides access to all of our configuration. */
+    public static JikanConfig config;
+
     public static void main (String[] args)
     {
 	Display display = new Display();
+        config = new JikanConfig(display);
+
         JikanShell shell = new JikanShell(display);
         shell.setSize(300, 600);
 	shell.open();
+
 	while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
                 display.sleep();
             }
 	}
+
+        config.dispose();
 	display.dispose();
     }
 }
