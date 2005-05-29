@@ -18,7 +18,7 @@
 
 package com.samskivert.jikan.ui;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -34,7 +34,7 @@ import com.samskivert.jikan.data.Item;
  */
 public class ItemList extends Composite
 {
-    public ItemList (Composite parent, String title, ArrayList<Item> items)
+    public ItemList (Composite parent, String title, List<Item> items)
     {
         super(parent, 0);
         GridLayout gl = new GridLayout();
@@ -52,8 +52,7 @@ public class ItemList extends Composite
         // add the items
         for (Item item : items) {
             ItemWidget iw = new ItemWidget(this, item);
-            iw.setLayoutData(
-                new GridData(GridData.FILL|GridData.GRAB_HORIZONTAL));
+            iw.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
     }
 }

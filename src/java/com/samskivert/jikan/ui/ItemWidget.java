@@ -19,6 +19,8 @@
 package com.samskivert.jikan.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -50,6 +52,7 @@ public class ItemWidget extends Composite
         _text = new Text(this, SWT.SINGLE);
         _text.addKeyListener(_klistener);
         _text.setVisible(false);
+        _text.addFocusListener(_flistener);
 
         _label.setText(item.getText());
         _text.setText(item.getText());
@@ -122,6 +125,15 @@ public class ItemWidget extends Composite
         }
         public void keyReleased (KeyEvent e) {
             // nada
+        }
+    };
+
+    protected FocusListener _flistener = new FocusListener() {
+        public void focusGained (FocusEvent e) {
+            // nada
+        }
+        public void focusLost (FocusEvent e) {
+            commitEdit();
         }
     };
 

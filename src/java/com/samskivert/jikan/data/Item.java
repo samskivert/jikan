@@ -18,17 +18,21 @@
 
 package com.samskivert.jikan.data;
 
-import java.util.Date;
+import java.util.Properties;
 
 /**
- * Contains the information on a particular item.
+ * Contains information on a particular item.
  */
 public class Item
 {
-    public Item (Date when, String text)
+    public Item (String text)
     {
-        _when = when;
         _text = text;
+    }
+
+    public Item (Properties props, int index)
+    {
+        _text = props.getProperty("item" + index);
     }
 
     public String getText ()
@@ -41,6 +45,5 @@ public class Item
         _text = text;
     }
 
-    protected Date _when;
     protected String _text;
 }

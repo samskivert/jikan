@@ -55,7 +55,7 @@ public class JikanConfig
     public Font getFont (int type)
     {
         if (_fonts[type] == null) {
-            FontData data = new FontData("Helvetica", 24, SWT.BOLD);
+            FontData data = new FontData("Helvetica", 18, SWT.BOLD);
             _fonts[type] = new Font(_display, data);
         }
         return _fonts[type];
