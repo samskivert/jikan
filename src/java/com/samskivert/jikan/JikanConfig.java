@@ -19,9 +19,11 @@
 package com.samskivert.jikan;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Provides access to all of the configuration information for Jikan.
@@ -47,6 +49,7 @@ public class JikanConfig
     {
         _display = display;
         _fonts = new Font[FONT_TYPES];
+        _todayColor = new Color(display, new RGB(0x99, 0xCC, 0xFF));
     }
 
     /**
@@ -55,7 +58,7 @@ public class JikanConfig
     public Font getFont (int type)
     {
         if (_fonts[type] == null) {
-            FontData data = new FontData("Helvetica", 18, SWT.BOLD);
+            FontData data = new FontData("Helvetica", 12, SWT.BOLD);
             _fonts[type] = new Font(_display, data);
         }
         return _fonts[type];
@@ -73,6 +76,14 @@ public class JikanConfig
     }
 
     /**
+     * Returns the color in which to render the current date.
+     */
+    public Color getTodayColor ()
+    {
+        return _todayColor;
+    }
+
+    /**
      * Cleans up any resources used by the configuration.
      */
     public void dispose ()
@@ -87,4 +98,5 @@ public class JikanConfig
 
     protected Display _display;
     protected Font[] _fonts;
+    protected Color _todayColor;
 }

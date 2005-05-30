@@ -71,6 +71,7 @@ public class PropFileItemStore extends ItemStore
         throws IOException
     {
         Properties props = new Properties();
+        // TODO: use UTF-8
         props.load(new BufferedInputStream(new FileInputStream(propfile)));
 
         String catname = props.getProperty("category");

@@ -46,8 +46,7 @@ public class ItemList extends Composite
         Label label = new Label(this, 0);
         label.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
         label.setText(title);
-        label.setLayoutData(
-            new GridData(GridData.FILL|GridData.GRAB_HORIZONTAL));
+        label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         // add the items
         for (Item item : items) {

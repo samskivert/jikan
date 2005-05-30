@@ -19,7 +19,8 @@
 package com.samskivert.jikan.ui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
@@ -36,11 +37,17 @@ public class JikanShell
     {
         _display = display;
         _shell = new Shell(display, SWT.BORDER|SWT.SHELL_TRIM);
-        _shell.setLayout(new FillLayout(SWT.VERTICAL));
+        _shell.setLayout(new GridLayout(1, true));
+
+        CalendarWidget cal = new CalendarWidget(_shell);
+        cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
         for (String category : Jikan.store.getCategories()) {
-            new ItemList(_shell, category, Jikan.store.getItems(category));
+            ItemList list = new ItemList(
+                _shell, category, Jikan.store.getItems(category));
+            list.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
-        _shell.setSize(300, 600);
+        _shell.setSize(400, 800);
 	_shell.open();
     }
 
