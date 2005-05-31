@@ -25,14 +25,21 @@ import java.util.Properties;
  */
 public class Item
 {
-    public Item (String text)
+    public Item (Category category, String text)
     {
+        _category = category;
         _text = text;
     }
 
-    public Item (Properties props, int index)
+    public Item (Category category, Properties props, int index)
     {
+        _category = category;
         _text = props.getProperty("item" + index);
+    }
+
+    public Category getCategory ()
+    {
+        return _category;
     }
 
     public String getText ()
@@ -43,7 +50,32 @@ public class Item
     public void setText (String text)
     {
         _text = text;
+        notifyModified();
     }
 
+    public String toString ()
+    {
+        return "[cat=" + _category.getName() + ", text=" + _text + "]";
+    }
+
+    protected void setStore (ItemStore store)
+    {
+        _store = store;
+    }
+
+    protected void notifyModified ()
+    {
+        if (_store != null) {
+            _store.itemModified(this);
+        }
+    }
+
+    protected void store (Properties props, int index)
+    {
+        props.setProperty("item" + index, _text);
+    }
+
+    protected Category _category;
     protected String _text;
+    protected ItemStore _store;
 }

@@ -19,13 +19,16 @@
 package com.samskivert.jikan.data;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -39,60 +42,125 @@ public class PropFileItemStore extends ItemStore
     public PropFileItemStore (File propdir)
         throws IOException
     {
+        _propdir = propdir;
         // scan the directory for all .properties files and load them up
         String[] files = propdir.list();
         for (int ii = 0; ii < files.length; ii++) {
             if (files[ii].endsWith(".properties")) {
-                loadCategory(new File(propdir, files[ii]));
+                loadCategory(files[ii], new File(propdir, files[ii]));
             }
         }
     }
 
     @Override // documentation inherited
-    public List<String> getCategories ()
+    public Iterator<Category> getCategories ()
     {
-        return new ArrayList<String>(_cats.keySet());
+        return _cats.keySet().iterator();
     }
 
     @Override // documentation inherited
-    public List<Item> getItems (String category)
+    public Iterator<Item> getItems (Category category)
     {
-        List<Item> items = _cats.get(category);
-        return items == null ? null : new ArrayList<Item>(items);
+        ArrayList<Item> items = _cats.get(category);
+        return (items == null) ? null : items.iterator();
     }
 
     @Override // documentation inherited
-    public void storeCategory (String category, List<Item> items)
+    public void addItem (Item item)
     {
-        // todo
+        ArrayList<Item> items = _cats.get(item.getCategory());
+        if (items == null) {
+            _cats.put(item.getCategory(), items = new ArrayList<Item>());
+        }
+        items.add(item);
+        item.setStore(this);
+        _modified.add(item.getCategory());
+        queueFlush();
     }
 
-    protected void loadCategory (File propfile)
+    @Override // documentation inherited
+    public void deleteItem (Item item)
+    {
+        ArrayList<Item> items = _cats.get(item.getCategory());
+        if (items == null) {
+            log.warning("Requested to delete item in non-existent category " +
+                        "[item=" + item + "].");
+            return;
+        }
+        if (items.remove(item)) {
+            _modified.add(item.getCategory());
+            queueFlush();
+        } else {
+            log.warning("Requested to delete unknown item " +
+                        "[item=" + item + "].");
+        }
+    }
+
+    @Override // documentation inherited
+    public void itemModified (Item item)
+    {
+        _modified.add(item.getCategory());
+        queueFlush();
+    }
+
+    @Override // documentation inherited
+    public void flushModified ()
+    {
+        for (Iterator<Category> iter = _modified.iterator(); iter.hasNext(); ) {
+            Category category = iter.next();
+            log.info("Flushing " + category);
+            Properties props = new Properties();
+            props.setProperty("category", category.getName());
+            props.setProperty("items", "" + _cats.get(category).size());
+            int idx = 0;
+            for (Item item : _cats.get(category)) {
+                item.store(props, idx++);
+            }
+            File file = new File(_propdir, category.getFile() + ".properties");
+            try {
+                BufferedOutputStream bout = new BufferedOutputStream(
+                    new FileOutputStream(file));
+                props.store(bout, "");
+                bout.close();
+                iter.remove();
+            } catch (IOException ioe) {
+                log.log(Level.WARNING, "Failed writing '" + file + "'.", ioe);
+            }
+        }
+    }
+
+    protected void loadCategory (String fname, File propfile)
         throws IOException
     {
         Properties props = new Properties();
-        // TODO: use UTF-8
+        // TODO: use UTF-8 and perhaps the XML format as well
         props.load(new BufferedInputStream(new FileInputStream(propfile)));
 
         String catname = props.getProperty("category");
+        if (catname == null) {
+            log.warning("Property file missing category " +
+                        "[file=" + propfile + "].");
+            return;
+        }
+
+        fname = fname.substring(0, fname.indexOf(".properties"));
+        Category category = new Category(catname, fname);
         ArrayList<Item> items = new ArrayList<Item>();
-        int icount = getIntProperty(props, "items");
+        int icount = PropUtil.getIntProperty(props, "items");
         for (int ii = 0; ii < icount; ii++) {
-            items.add(new Item(props, ii));
+            Item item;
+            if (category.equals(Category.EVENTS)) {
+                items.add(item = new Event(props, ii));
+            } else {
+                items.add(item = new Item(category, props, ii));
+            }
+            item.setStore(this);
         }
-        _cats.put(catname, items);
+        _cats.put(category, items);
     }
 
-    protected int getIntProperty (Properties props, String key)
-    {
-        try {
-            return Integer.parseInt(props.getProperty(key));
-        } catch (Exception e) {
-            log.log(Level.WARNING, "Unable to read '" + key + "'.", e);
-            return 0;
-        }
-    }
-
-    protected HashMap<String,ArrayList<Item>> _cats =
-        new HashMap<String,ArrayList<Item>>();
+    protected File _propdir;
+    protected HashMap<Category,ArrayList<Item>> _cats =
+        new HashMap<Category,ArrayList<Item>>();
+    protected HashSet<Category> _modified = new HashSet<Category>();
 }

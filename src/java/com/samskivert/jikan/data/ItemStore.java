@@ -18,7 +18,9 @@
 
 package com.samskivert.jikan.data;
 
-import java.util.List;
+import java.util.Iterator;
+
+import com.samskivert.util.Interval;
 
 /**
  * Defines an interface to a persistent store of item data for Jikan.
@@ -42,18 +44,67 @@ public abstract class ItemStore
     /**
      * Returns the names of all categories in this store.
      */
-    public abstract List<String> getCategories ();
+    public abstract Iterator<Category> getCategories ();
 
     /**
      * Returns a list of {@link Item} instances for the specified
      * category.
      */
-    public abstract List<Item> getItems (String category);
+    public abstract Iterator<Item> getItems (Category category);
 
     /**
-     * Updates the contents of a category in the item store.
+     * Adds the supplied item to the appropriate category. The repository
+     * should automatically queue up a flush.
      */
-    public abstract void storeCategory (String category, List<Item> items);
+    public abstract void addItem (Item item);
+
+    /**
+     * Removes the specified item from the appropriate category. The
+     * repository should automatically queue up a flush.
+     */
+    public abstract void deleteItem (Item item);
+
+    /**
+     * Called by an item when it is modified. The repository should mark
+     * the appropriate category as modified and queue up a flush.
+     */
+    public abstract void itemModified (Item item);
+
+    /**
+     * Writes all modified categories to the persistent store.
+     */
+    public abstract void flushModified ();
+
+    /**
+     * Queues up a request to call {@link #flushModified}.
+     */
+    public synchronized void queueFlush ()
+    {
+        if (_flusher == null) {
+            _flusher = new Interval() {
+                public void expired () {
+                    flushModified();
+                    synchronized (ItemStore.this) {
+                        _flusher = null;
+                    }
+                }
+            };
+            _flusher.schedule(5000L);
+        }
+    }
+
+    /**
+     * Cancels any pending flush and immediately flushes all
+     * modifications.
+     */
+    public synchronized void shutdown ()
+    {
+        if (_flusher != null) {
+            _flusher.cancel();
+            _flusher = null;
+            flushModified();
+        }
+    }
 
     /**
      * Configures a listener that will be notified when any category is
@@ -76,4 +127,5 @@ public abstract class ItemStore
     }
 
     protected StoreListener _listener;
+    protected Interval _flusher;
 }

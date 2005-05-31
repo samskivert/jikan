@@ -18,7 +18,7 @@
 
 package com.samskivert.jikan.ui;
 
-import java.util.List;
+import java.util.Iterator;
 
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.samskivert.jikan.Jikan;
+import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.Item;
 
 /**
@@ -34,9 +35,11 @@ import com.samskivert.jikan.data.Item;
  */
 public class ItemList extends Composite
 {
-    public ItemList (Composite parent, String title, List<Item> items)
+    public ItemList (Composite parent, Category category, Iterator<Item> items)
     {
         super(parent, 0);
+        _category = category;
+
         GridLayout gl = new GridLayout();
         gl.verticalSpacing = 0;
         gl.numColumns = 1;
@@ -45,13 +48,15 @@ public class ItemList extends Composite
         // add the title
         Label label = new Label(this, 0);
         label.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
-        label.setText(title);
+        label.setText(category.getName());
         label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         // add the items
-        for (Item item : items) {
-            ItemWidget iw = new ItemWidget(this, item);
+        while (items.hasNext()) {
+            ItemWidget iw = new ItemWidget(this, items.next());
             iw.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
     }
+
+    protected Category _category;
 }

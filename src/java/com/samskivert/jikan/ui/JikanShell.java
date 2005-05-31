@@ -18,6 +18,8 @@
 
 package com.samskivert.jikan.ui;
 
+import java.util.Iterator;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,6 +28,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
 import com.samskivert.jikan.Jikan;
+import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.Item;
 
 /**
@@ -42,10 +45,19 @@ public class JikanShell
         CalendarWidget cal = new CalendarWidget(_shell);
         cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        for (String category : Jikan.store.getCategories()) {
-            ItemList list = new ItemList(
+        EventList elist = new EventList(
+            _shell, Jikan.store.getItems(Category.EVENTS));
+        elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        Iterator<Category> iter = Jikan.store.getCategories();
+        while (iter.hasNext()) {
+            Category category = iter.next();
+            if (category.equals(Category.EVENTS)) {
+                continue;
+            }
+            ItemList ilist = new ItemList(
                 _shell, category, Jikan.store.getItems(category));
-            list.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            ilist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
         _shell.setSize(400, 800);
 	_shell.open();

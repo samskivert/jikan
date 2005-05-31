@@ -19,8 +19,11 @@
 package com.samskivert.jikan.ui;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -31,6 +34,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
+import com.samskivert.jikan.data.Event;
 import com.samskivert.jikan.Jikan;
 
 import static com.samskivert.jikan.Jikan.log;
@@ -70,6 +74,17 @@ public class CalendarWidget extends Canvas
     {
         _cal.setTime(when);
         _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
+    }
+
+    public void setEvents (List<Event> events)
+    {
+        for (Event event : events) {
+            List<Event> devents = _events.get(event.getDate());
+            if (devents == null) {
+                _events.put(event.getDate(), devents = new ArrayList<Event>());
+            }
+            devents.add(event);
+        }
     }
 
     @Override // documentation inherited
@@ -165,6 +180,8 @@ public class CalendarWidget extends Canvas
     protected int _sweek;
     protected int _tdate, _tyear;
     protected int _hheight, _csize, _wcount;
+    protected HashMap<Date,List<Event>> _events =
+        new HashMap<Date,List<Event>>();
 
     protected static String[] _headers = new String[7];
     protected static Point[] _hpos = new Point[7];
