@@ -123,7 +123,9 @@ public class EditableLabel extends Composite
             // nada
         }
         public void mouseDown (MouseEvent e) {
-            startEdit();
+            if (e.button == 1) {
+                startEdit();
+            }
         }
     };
 

@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.samskivert.jikan.Jikan;
 import com.samskivert.jikan.data.Category;
+import com.samskivert.jikan.data.Event;
 import com.samskivert.jikan.data.Item;
 
 /**
@@ -48,6 +49,7 @@ public class JikanShell
         EventList elist = new EventList(
             _shell, Jikan.store.getItems(Category.EVENTS));
         elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        cal.setEvents(elist, Jikan.store.getItems(Category.EVENTS));
 
         Iterator<Category> iter = Jikan.store.getCategories();
         while (iter.hasNext()) {

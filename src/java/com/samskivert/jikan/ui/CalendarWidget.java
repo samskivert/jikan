@@ -23,18 +23,25 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
 import com.samskivert.jikan.data.Event;
+import com.samskivert.jikan.data.Item;
 import com.samskivert.jikan.Jikan;
 
 import static com.samskivert.jikan.Jikan.log;
@@ -68,6 +75,14 @@ public class CalendarWidget extends Canvas
         _tyear = _cal.get(Calendar.YEAR);
 
         setStartDate(today);
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseDown (MouseEvent event) {
+                if (event.button == 3) {
+                    createEvent(event.x, event.y);
+                }
+            }
+        });
     }
 
     public void setStartDate (Date when)
@@ -76,9 +91,12 @@ public class CalendarWidget extends Canvas
         _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
     }
 
-    public void setEvents (List<Event> events)
+    public void setEvents (EventList elist, Iterator<Item> events)
     {
-        for (Event event : events) {
+        _elist = elist;
+
+        while (events.hasNext()) {
+            Event event = (Event)events.next();
             List<Event> devents = _events.get(event.getDate());
             if (devents == null) {
                 _events.put(event.getDate(), devents = new ArrayList<Event>());
@@ -176,6 +194,17 @@ public class CalendarWidget extends Canvas
         return (_cal.get(Calendar.DAY_OF_YEAR) == _tdate &&
                 _cal.get(Calendar.YEAR) == _tyear);
     }
+
+    protected void createEvent (int cx, int cy)
+    {
+        // determine which day the user clicked on
+        int row = (cy-_hheight) / _csize, col = Math.max(cx / _csize, 6);
+        _cal.set(Calendar.WEEK_OF_YEAR, _sweek + row);
+        _cal.set(Calendar.DAY_OF_WEEK, col + 1);
+        _elist.createEvent(_cal.getTime());
+    }
+
+    protected EventList _elist;
 
     protected int _sweek;
     protected int _tdate, _tyear;

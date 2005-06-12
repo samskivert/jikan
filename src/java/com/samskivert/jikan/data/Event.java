@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Color;
  * Extends an item with the notion of date (and possibly time).
  */
 public class Event extends Item
+    implements Comparable<Event>
 {
     public Event (String text, boolean allday, Date when, int duration)
     {
@@ -109,6 +110,12 @@ public class Event extends Item
     public Color getColor ()
     {
         return _color;
+    }
+
+    // documentation inherited from interface Comparable
+    public int compareTo (Event other)
+    {
+        return _when.compareTo(other._when);
     }
 
     public String toString ()

@@ -20,6 +20,8 @@ package com.samskivert.jikan.ui;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -27,6 +29,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import com.samskivert.util.CollectionUtil;
+
+import com.samskivert.jikan.Jikan;
 import com.samskivert.jikan.data.Event;
 import com.samskivert.jikan.data.Item;
 
@@ -42,11 +47,24 @@ public class EventList extends Composite
         GridLayout gl = new GridLayout();
         gl.numColumns = 2;
         gl.horizontalSpacing = 0;
+        gl.verticalSpacing = 0;
         setLayout(gl);
 
-        while (events.hasNext()) {
-            addEvent((Event)events.next());
+        ArrayList<Event> elist = new ArrayList<Event>();
+        CollectionUtil.addAll(elist, events);
+        Collections.sort(elist);
+
+        for (Event event : elist) {
+            addEvent(event);
         }
+    }
+
+    public void createEvent (Date when)
+    {
+        Event event = new Event("<new>", false, when, 0);
+        Jikan.store.addItem(event);
+        addEvent(event);
+        getParent().layout();
     }
 
     protected void addEvent (final Event event)
@@ -80,6 +98,7 @@ public class EventList extends Composite
                     event.setWhen(when, allday);
                     if (!text.equals(ntext)) {
                         setText(ntext);
+                        getParent().layout();
                     }
                 } else {
                     // TODO: report an error
@@ -87,7 +106,6 @@ public class EventList extends Composite
                 }
             }
         };
-        el.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         el = new EditableLabel(this, event.getText()) {
             protected void textUpdated (String text) {
                 event.setText(text);

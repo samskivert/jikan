@@ -29,6 +29,8 @@ import com.samskivert.jikan.Jikan;
 import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.Item;
 
+import static com.samskivert.jikan.Jikan.log;
+
 /**
  * Displays a list of items and provides the ability to edit those items
  * inline and add new items to the list.
@@ -56,6 +58,42 @@ public class ItemList extends Composite
             ItemWidget iw = new ItemWidget(this, items.next());
             iw.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
+
+        addBlankItem();
+    }
+
+    /**
+     * Called when the blank item we added to the end of our list is
+     * filled in.
+     */
+    protected Item createItem ()
+    {
+        Item item = new Item(_category, "");
+        Jikan.store.addItem(item);
+        addBlankItem();
+        return item;
+    }
+
+    /**
+     * Called when one of our children wants to be deleted.
+     */
+    protected void deleteItem (ItemWidget widget)
+    {
+        Item item = widget.getItem();
+        if (item != null) {
+            Jikan.store.deleteItem(item);
+        } else {
+            log.warning("Requested to delete item widget with no item.");
+        }
+        widget.dispose();
+        getParent().layout();
+    }
+
+    protected void addBlankItem ()
+    {
+        ItemWidget iw = new ItemWidget(this, null);
+        iw.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        getParent().layout();
     }
 
     protected Category _category;
