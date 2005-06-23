@@ -18,6 +18,7 @@
 
 package com.samskivert.jikan.ui;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
@@ -31,25 +32,35 @@ import com.samskivert.jikan.Jikan;
 import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.Event;
 import com.samskivert.jikan.data.Item;
+import com.samskivert.jikan.data.ItemStore;
 
 /**
  * Displays the main user interface.
  */
 public class JikanShell
+    implements ItemStore.StoreListener
 {
+    public static interface Refreshable
+    {
+        /** Instructs this category display to refresh itself. */
+        public void refresh ();
+    }
+
     public JikanShell (Display display)
     {
         _display = display;
         _shell = new Shell(display, SWT.BORDER|SWT.SHELL_TRIM);
         _shell.setLayout(new GridLayout(1, true));
 
+        Jikan.store.setStoreListener(this);
+
         CalendarWidget cal = new CalendarWidget(_shell);
         cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        EventList elist = new EventList(
-            _shell, Jikan.store.getItems(Category.EVENTS));
+        EventList elist = new EventList(_shell);
         elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         cal.setEvents(elist, Jikan.store.getItems(Category.EVENTS));
+        _catmap.put(Category.EVENTS, elist);
 
         Iterator<Category> iter = Jikan.store.getCategories();
         while (iter.hasNext()) {
@@ -57,9 +68,9 @@ public class JikanShell
             if (category.equals(Category.EVENTS)) {
                 continue;
             }
-            ItemList ilist = new ItemList(
-                _shell, category, Jikan.store.getItems(category));
+            ItemList ilist = new ItemList(_shell, category);
             ilist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            _catmap.put(category, ilist);
         }
         _shell.setSize(400, 800);
 	_shell.open();
@@ -74,6 +85,22 @@ public class JikanShell
 	}
     }
 
+    // documentation inherited from interface ItemStore.StoreListener
+    public void categoryUpdated (Category category)
+    {
+        final Refreshable list = _catmap.get(category);
+        if (list != null) {
+            _display.asyncExec(new Runnable() {
+                public void run () {
+                    list.refresh();
+                }
+            });
+        }
+    }
+
     protected Display _display;
     protected Shell _shell;
+
+    protected HashMap<Category,Refreshable> _catmap =
+        new HashMap<Category,Refreshable>();
 }

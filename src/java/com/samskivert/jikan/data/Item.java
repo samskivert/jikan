@@ -49,8 +49,10 @@ public class Item
 
     public void setText (String text)
     {
-        _text = text;
-        notifyModified();
+        if (!text.equals(_text)) {
+            _text = text;
+            notifyModified();
+        }
     }
 
     public String toString ()

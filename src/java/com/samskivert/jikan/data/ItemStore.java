@@ -38,7 +38,7 @@ public abstract class ItemStore
          * callback should simply notify the main thread that accesses the
          * store to reload the data in the specified category.
          */
-        public void categoryUpdated (String category);
+        public void categoryUpdated (Category category);
     }
 
     /**
@@ -72,6 +72,9 @@ public abstract class ItemStore
 
     /**
      * Writes all modified categories to the persistent store.
+     * <em>Note:</em> this may run asynchronously with normal item store
+     * methods, so it should take care to isolate data to be flushed in a
+     * synchronized block.
      */
     public abstract void flushModified ();
 
@@ -119,7 +122,7 @@ public abstract class ItemStore
      * Notifies any registered listener that the specified category has
      * been updated.
      */
-    protected void categoryUpdated (String category)
+    protected void categoryUpdated (Category category)
     {
         if (_listener != null) {
             _listener.categoryUpdated(category);

@@ -23,6 +23,7 @@ import java.util.Iterator;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import com.samskivert.jikan.Jikan;
@@ -36,8 +37,9 @@ import static com.samskivert.jikan.Jikan.log;
  * inline and add new items to the list.
  */
 public class ItemList extends Composite
+    implements JikanShell.Refreshable
 {
-    public ItemList (Composite parent, Category category, Iterator<Item> items)
+    public ItemList (Composite parent, Category category)
     {
         super(parent, 0);
         _category = category;
@@ -53,13 +55,31 @@ public class ItemList extends Composite
         label.setText(category.getName());
         label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        // add the items
+        refresh();
+    }
+
+    // documentation inherited from interface JikanShell.Refreshable
+    public void refresh ()
+    {
+        // blow away everything but the title label
+        Control[] children = getChildren();
+        for (int ii = 1; ii < children.length; ii++) {
+            children[ii].dispose();
+        }
+
+        // now add new widgets for our items
+        Iterator<Item> items = Jikan.store.getItems(_category);
         while (items.hasNext()) {
             ItemWidget iw = new ItemWidget(this, items.next());
             iw.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
 
+        // and add a blank one at the bottom
         addBlankItem();
+
+        // relayout our parent
+        layout();
+        getParent().layout();
     }
 
     /**

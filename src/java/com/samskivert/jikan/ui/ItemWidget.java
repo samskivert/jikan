@@ -39,6 +39,8 @@ import org.eclipse.swt.widgets.Text;
 
 import com.samskivert.jikan.data.Item;
 
+import static com.samskivert.jikan.Jikan.log;
+
 /**
  * Displays a single item and allows it to be edited if it is clicked
  * upon.
@@ -47,7 +49,7 @@ public class ItemWidget extends EditableLabel
 {
     public ItemWidget (Composite parent, Item item)
     {
-        super(parent, item == null ? "<new>" : item.getText());
+        super(parent, item == null ? START_TEXT : item.getText());
         _item = item;
         if (_item != null) {
             _label.setMenu(createPopup());
@@ -83,6 +85,10 @@ public class ItemWidget extends EditableLabel
 
     protected void textUpdated (String text)
     {
+        if (START_TEXT.equals(text)) {
+            return;
+        }
+
         if (_item == null) {
             _item = ((ItemList)getParent()).createItem();
             _label.setMenu(createPopup());
@@ -101,4 +107,6 @@ public class ItemWidget extends EditableLabel
     }
 
     protected Item _item;
+
+    protected static final String START_TEXT = "<new>";
 }

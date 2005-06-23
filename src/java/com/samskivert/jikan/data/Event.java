@@ -80,9 +80,11 @@ public class Event extends Item
      */
     public void setWhen (Date when, boolean allday)
     {
-        _when = when;
-        _allday = allday;
-        notifyModified();
+        if (!when.equals(_when) || allday != _allday) {
+            _when = when;
+            _allday = allday;
+            notifyModified();
+        }
     }
 
     /**

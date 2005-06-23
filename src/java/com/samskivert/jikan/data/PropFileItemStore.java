@@ -32,6 +32,9 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import com.samskivert.util.Interval;
+import com.samskivert.util.Tuple;
+
 import static com.samskivert.jikan.Jikan.log;
 
 /**
@@ -43,6 +46,7 @@ public class PropFileItemStore extends ItemStore
         throws IOException
     {
         _propdir = propdir;
+
         // scan the directory for all .properties files and load them up
         String[] files = propdir.list();
         for (int ii = 0; ii < files.length; ii++) {
@@ -50,6 +54,14 @@ public class PropFileItemStore extends ItemStore
                 loadCategory(files[ii], new File(propdir, files[ii]));
             }
         }
+
+        // queue up an interval to check for modifications periodically
+        Interval checker = new Interval() {
+            public void expired () {
+                checkModified();
+            }
+        };
+        checker.schedule(5000L, true);
     }
 
     @Override // documentation inherited
@@ -66,11 +78,13 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
-    public void addItem (Item item)
+    public synchronized void addItem (Item item)
     {
         ArrayList<Item> items = _cats.get(item.getCategory());
         if (items == null) {
-            _cats.put(item.getCategory(), items = new ArrayList<Item>());
+            log.warning("Requested to add item to non-existent category " +
+                        "[item=" + item + "].");
+            return;
         }
         items.add(item);
         item.setStore(this);
@@ -79,7 +93,7 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
-    public void deleteItem (Item item)
+    public synchronized void deleteItem (Item item)
     {
         ArrayList<Item> items = _cats.get(item.getCategory());
         if (items == null) {
@@ -97,7 +111,7 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
-    public void itemModified (Item item)
+    public synchronized void itemModified (Item item)
     {
         _modified.add(item.getCategory());
         queueFlush();
@@ -106,9 +120,29 @@ public class PropFileItemStore extends ItemStore
     @Override // documentation inherited
     public void flushModified ()
     {
+        for (Tuple tup : flattenCategories()) {
+            Category category = (Category)tup.left;
+            Properties props = (Properties)tup.right;
+            CategoryInfo catinfo = _catinfo.get(category);
+            log.info("Flushing " + category);
+            try {
+                BufferedOutputStream bout = new BufferedOutputStream(
+                    new FileOutputStream(catinfo.source));
+                props.store(bout, "");
+                bout.close();
+                catinfo.flushed();
+            } catch (IOException ioe) {
+                log.log(Level.WARNING, "Failed writing '" + catinfo.source +
+                        "'.", ioe);
+            }
+        }            
+    }
+
+    protected synchronized ArrayList<Tuple> flattenCategories ()
+    {
+        ArrayList<Tuple> flats = new ArrayList<Tuple>();
         for (Iterator<Category> iter = _modified.iterator(); iter.hasNext(); ) {
             Category category = iter.next();
-            log.info("Flushing " + category);
             Properties props = new Properties();
             props.setProperty("category", category.getName());
             props.setProperty("items", "" + _cats.get(category).size());
@@ -116,20 +150,13 @@ public class PropFileItemStore extends ItemStore
             for (Item item : _cats.get(category)) {
                 item.store(props, idx++);
             }
-            File file = new File(_propdir, category.getFile() + ".properties");
-            try {
-                BufferedOutputStream bout = new BufferedOutputStream(
-                    new FileOutputStream(file));
-                props.store(bout, "");
-                bout.close();
-                iter.remove();
-            } catch (IOException ioe) {
-                log.log(Level.WARNING, "Failed writing '" + file + "'.", ioe);
-            }
+            iter.remove();
+            flats.add(new Tuple(category, props));
         }
+        return flats;
     }
 
-    protected void loadCategory (String fname, File propfile)
+    protected Category loadCategory (String fname, File propfile)
         throws IOException
     {
         Properties props = new Properties();
@@ -140,10 +167,13 @@ public class PropFileItemStore extends ItemStore
         if (catname == null) {
             log.warning("Property file missing category " +
                         "[file=" + propfile + "].");
-            return;
+            return null;
         }
 
-        fname = fname.substring(0, fname.indexOf(".properties"));
+        int sufidx = fname.indexOf(".properties");
+        if (sufidx != -1) {
+            fname = fname.substring(0, sufidx);
+        }
         Category category = new Category(catname, fname);
         ArrayList<Item> items = new ArrayList<Item>();
         int icount = PropUtil.getIntProperty(props, "items");
@@ -156,11 +186,76 @@ public class PropFileItemStore extends ItemStore
             }
             item.setStore(this);
         }
-        _cats.put(category, items);
+
+        // TODO: merge loaded data with in-memory category if it has been
+        // modified recently
+        synchronized (this) {
+            _cats.put(category, items);
+            _catinfo.put(category, new CategoryInfo(fname, propfile));
+        }
+
+        return category;
+    }
+
+    protected void checkModified ()
+    {
+        // make a first pass detecting which are modified
+        HashSet<CategoryInfo> modified = new HashSet<CategoryInfo>();
+        for (CategoryInfo catinfo : _catinfo.values()) {
+            if (catinfo.checkNewer()) {
+                modified.add(catinfo);
+            }
+        }
+
+        // then reload which will modify the catinfo table
+        for (CategoryInfo catinfo : modified) {
+            log.info("Reloading modified category " + catinfo.source);
+            Category cat = null;
+            try {
+                cat = loadCategory(catinfo.sourceName, catinfo.source);
+            } catch (IOException ioe) {
+                log.log(Level.WARNING, "Failed reloading category '" +
+                        catinfo.source + "'.", ioe);
+            }
+            if (cat != null) {
+                categoryUpdated(cat);
+            }
+        }
+    }
+
+    protected static class CategoryInfo
+    {
+        public String sourceName;
+        public File source;
+        public long lastModified;
+
+        public CategoryInfo (String sourceName, File source)
+        {
+            this.sourceName = sourceName;
+            this.source = source;
+            this.lastModified = source.lastModified();
+        }
+
+        public synchronized boolean checkNewer ()
+        {
+            long newLastMod = source.lastModified();
+            if (newLastMod > lastModified) {
+                lastModified = newLastMod;
+                return true;
+            }
+            return false;
+        }
+
+        public synchronized void flushed ()
+        {
+            lastModified = source.lastModified();
+        }
     }
 
     protected File _propdir;
     protected HashMap<Category,ArrayList<Item>> _cats =
         new HashMap<Category,ArrayList<Item>>();
+    protected HashMap<Category,CategoryInfo> _catinfo =
+        new HashMap<Category,CategoryInfo>();
     protected HashSet<Category> _modified = new HashSet<Category>();
 }
