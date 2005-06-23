@@ -50,6 +50,7 @@ public class JikanShell
     {
         _display = display;
         _shell = new Shell(display, SWT.BORDER|SWT.SHELL_TRIM);
+        _shell.setText("Jikan");
         _shell.setLayout(new GridLayout(1, true));
 
         Jikan.store.setStoreListener(this);
@@ -72,7 +73,7 @@ public class JikanShell
             ilist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
             _catmap.put(category, ilist);
         }
-        _shell.setSize(400, 800);
+        _shell.setSize(455, 800);
 	_shell.open();
     }
 

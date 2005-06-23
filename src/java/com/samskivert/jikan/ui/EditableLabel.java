@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -63,6 +64,11 @@ public class EditableLabel extends Composite
     {
         _label.setText(text);
         _text.setText(text);
+    }
+
+    public void setMenu (Menu popup)
+    {
+        _label.setMenu(popup);
     }
 
     protected void textUpdated (String text)

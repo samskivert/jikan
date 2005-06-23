@@ -18,14 +18,11 @@
 
 package com.samskivert.jikan.ui;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -60,9 +57,23 @@ public class EventList extends Composite
 
     public void createEvent (Date when)
     {
-        Event event = new Event("<new>", false, when, 0);
-        Jikan.store.addItem(event);
-        addEvent(event);
+        _nevent = new Event("<new>", true, when, 0);
+        Jikan.store.addItem(_nevent);
+        refresh();
+    }
+
+    /**
+     * Called when one of our children wants to be deleted.
+     */
+    protected void deleteEvent (EventWidget widget)
+    {
+        Event event = widget.getEvent();
+        if (event != null) {
+            Jikan.store.deleteItem(event);
+        } else {
+            log.warning("Requested to delete event widget with no event.");
+        }
+        widget.dispose();
         getParent().layout();
     }
 
@@ -81,7 +92,11 @@ public class EventList extends Composite
         Collections.sort(elist);
 
         for (Event event : elist) {
-            addEvent(event);
+            EventWidget ew = new EventWidget(this, event);
+            if (event == _nevent) {
+                ew.edit();
+                _nevent = null;
+            }
         }
 
 //         // and add a blank one at the bottom
@@ -92,55 +107,5 @@ public class EventList extends Composite
         getParent().layout();
     }
 
-    protected void addEvent (final Event event)
-    {
-        EditableLabel el;
-        final DateFormat fmt = event.isAllDay() ? _adfmt : _dfmt;
-        el = new EditableLabel(this, fmt.format(event.getWhen())) {
-            protected void textUpdated (String text) {
-                Date when = null;
-                boolean allday = false;
-                String ntext = null;
-                // first try parsing a date and time
-                try {
-                    when = _dfmt.parse(text);
-                    ntext = _dfmt.format(when);
-                } catch (ParseException pe) {
-                    // pe.printStackTrace(System.err);
-                }
-                // if that failed, try just the date
-                if (when == null) {
-                    try {
-                        when = _adfmt.parse(text);
-                        ntext = _adfmt.format(when);
-                        allday = true;
-                    } catch (ParseException pe) {
-                        System.err.println(pe.getMessage());
-                    }
-                }
-                // if we got something, update the event
-                if (when != null) {
-                    event.setWhen(when, allday);
-                    if (!text.equals(ntext)) {
-                        setText(ntext);
-                        getParent().layout();
-                    }
-                } else {
-                    // TODO: report an error
-                    startEdit();
-                }
-            }
-        };
-        el = new EditableLabel(this, event.getText()) {
-            protected void textUpdated (String text) {
-                event.setText(text);
-            }
-        };
-        el.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    }
-
-    protected static DateFormat _adfmt =
-        DateFormat.getDateInstance(DateFormat.SHORT);
-    protected static DateFormat _dfmt =
-        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+    protected Event _nevent;
 }

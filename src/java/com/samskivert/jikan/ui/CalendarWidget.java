@@ -56,6 +56,9 @@ public class CalendarWidget extends Canvas
     {
         super(parent, 0);
 
+        // display 5 weeks at a time
+        _wcount = 5;
+
 	addPaintListener(new PaintListener() {
             public void paintControl (PaintEvent e) {
                 paint(e);
@@ -121,20 +124,29 @@ public class CalendarWidget extends Canvas
                 _hpos[dd] = new Point((_csize*dd) + (_csize-hs.x)/2, 0);
             }
             _hheight += 5;
-            _wcount = (height-_hheight) / _csize;
 
         } finally {
             gc.dispose();
+        }
+
+        // compute our precise height for this width and force a relayout
+        // of our parent if we're not the right size
+        int pheight = _hheight + _wcount * _csize;
+        if (pheight != height) {
+            _psize.x = width;
+            _psize.y = pheight;
+            getDisplay().asyncExec(new Runnable() {
+                public void run () {
+                    getParent().layout();
+                }
+            });
         }
     }
 
     @Override // documentation inherited
     public Point computeSize (int wHint, int hHint, boolean changed)
     {
-        if (wHint < 0) {
-            wHint = 7*55;
-        }
-        return new Point(wHint, (wHint/7)*6);
+        return (wHint < 0) ? _psize : new Point(wHint, (wHint/7)*6);
     }
 
     protected void paint (PaintEvent event)
@@ -198,7 +210,7 @@ public class CalendarWidget extends Canvas
     protected void createEvent (int cx, int cy)
     {
         // determine which day the user clicked on
-        int row = (cy-_hheight) / _csize, col = Math.max(cx / _csize, 6);
+        int row = (cy-_hheight) / _csize, col = Math.min(cx / _csize, 6);
         _cal.set(Calendar.WEEK_OF_YEAR, _sweek + row);
         _cal.set(Calendar.DAY_OF_WEEK, col + 1);
         _elist.createEvent(_cal.getTime());
@@ -211,6 +223,8 @@ public class CalendarWidget extends Canvas
     protected int _hheight, _csize, _wcount;
     protected HashMap<Date,List<Event>> _events =
         new HashMap<Date,List<Event>>();
+
+    protected Point _psize = new Point(55*7, 55*6);
 
     protected static String[] _headers = new String[7];
     protected static Point[] _hpos = new Point[7];

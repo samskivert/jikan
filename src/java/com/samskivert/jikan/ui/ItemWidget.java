@@ -52,7 +52,7 @@ public class ItemWidget extends EditableLabel
         super(parent, item == null ? START_TEXT : item.getText());
         _item = item;
         if (_item != null) {
-            _label.setMenu(createPopup());
+            setMenu(createPopup());
         }
     }
 
@@ -91,7 +91,7 @@ public class ItemWidget extends EditableLabel
 
         if (_item == null) {
             _item = ((ItemList)getParent()).createItem();
-            _label.setMenu(createPopup());
+            setMenu(createPopup());
         }
         _item.setText(text);
     }
