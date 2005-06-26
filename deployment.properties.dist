@@ -1,0 +1,11 @@
+#
+# $Id$
+#
+# Defines properties related to the Jikan JWS deployment.
+
+web_dir = /export/samskivert/pages/code/jikan
+application_uri = http://www.samskivert.com/code/jikan
+
+sign.alias = whomever
+sign.keystore = /path/to/keystore.dat
+sign.storepass = secret_password

@@ -1,6 +1,9 @@
 <!-- build configuration -->
 <project name="jikan" default="compile" basedir=".">
 
+  <!-- read in our deployment properties -->
+  <property file="deployment.properties"/>
+
   <!-- various basic settings -->
   <property name="app.name" value="jikan"/>
   <property name="src.dir" value="src/java"/>
@@ -74,5 +77,34 @@
     <taskdef resource="proguard/ant/task.properties"
              classpath="lib/proguard.jar"/>
     <proguard configuration="etc/jikan.pro"/>
+    <copy todir="${web_dir}">
+      <fileset dir="dist" includes="jikan-pro.jar"/>
+      <fileset dir="lib/native" includes="*.jar"/>
+    </copy>
+
+    <!-- create the platform jar files -->
+    <jar file="${web_dir}/swt-libs-windows.jar">
+      <fileset dir="lib/native" includes="*.dll"/>
+    </jar>
+    <jar file="${web_dir}/swt-libs-linux.jar">
+      <fileset dir="lib/native" includes="*.so"/>
+    </jar>
+    <jar file="${web_dir}/swt-libs-macosx.jar">
+      <fileset dir="lib/native" includes="*.jnilib"/>
+    </jar>
+
+    <!-- create the JNLP file -->
+    <copy todir="${web_dir}">
+      <fileset dir="etc" includes="jikan.jnlp"/>
+      <filterset>
+        <filter token="application_uri" value="${application_uri}"/>
+      </filterset>
+    </copy>
+
+    <!-- sign the jar files -->
+    <signjar keystore="${sign.keystore}" alias="${sign.alias}"
+      storepass="${sign.storepass}" lazy="true">
+      <fileset dir="${web_dir}" includes="*.jar"/>
+    </signjar>
   </target>
 </project>

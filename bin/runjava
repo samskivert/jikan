@@ -36,15 +36,8 @@ my $java = "$jhome/bin/java";
 my $jlib = "$jhome/lib/classes.zip";
 my $jargs = "";
 
-# determine our machine architecture
-my $ostype = `uname -s`;
-my $machtype = `uname -m`;
-chomp($ostype);
-chomp($machtype);
-my $arch = "$machtype-$ostype";
-
 # add our native libraries to the runtime library path
-my $libs = "$root/lib/$arch";
+my $libs = "$root/lib/native";
 my $libpath = $ENV{"LD_LIBRARY_PATH"};
 
 if (defined $libpath) {
