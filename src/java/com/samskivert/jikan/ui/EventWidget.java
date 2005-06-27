@@ -84,7 +84,8 @@ public class EventWidget
             }
         };
         _when.setMenu(popup);
-        _when.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        _when.setLayoutData(
+            new GridData(GridData.FILL, GridData.CENTER, false, true));
 
         _text = new EditableLabel(parent, event.getText()) {
             protected void textUpdated (String text) {
@@ -92,7 +93,8 @@ public class EventWidget
             }
         };
         _text.setMenu(popup);
-        _text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        _text.setLayoutData(
+            new GridData(GridData.FILL, GridData.CENTER, true, true));
     }
 
     public Event getEvent ()
