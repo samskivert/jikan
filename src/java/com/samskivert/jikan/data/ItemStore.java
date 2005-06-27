@@ -53,6 +53,12 @@ public abstract class ItemStore
     public abstract Iterator<Item> getItems (Category category);
 
     /**
+     * Requests that a new category be created with the supplied
+     * configuration.
+     */
+    public abstract void createCategory (Category category);
+
+    /**
      * Adds the supplied item to the appropriate category. The repository
      * should automatically queue up a flush.
      */

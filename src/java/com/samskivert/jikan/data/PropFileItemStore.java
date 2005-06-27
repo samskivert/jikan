@@ -51,7 +51,8 @@ public class PropFileItemStore extends ItemStore
         String[] files = propdir.list();
         for (int ii = 0; ii < files.length; ii++) {
             if (files[ii].endsWith(".properties")) {
-                loadCategory(files[ii], new File(propdir, files[ii]));
+                File propfile = new File(propdir, files[ii]);
+                loadCategory(files[ii], propfile, new Category());
             }
         }
 
@@ -74,7 +75,22 @@ public class PropFileItemStore extends ItemStore
     public Iterator<Item> getItems (Category category)
     {
         ArrayList<Item> items = _cats.get(category);
+        // journal categories are loaded on demand
+        if (items == null && category instanceof JournalCategory) {
+            loadJournalCategory(category);
+            items = _cats.get(category);
+        }
         return (items == null) ? null : items.iterator();
+    }
+
+    @Override // documentation inherited
+    public synchronized void createCategory (Category category)
+    {
+        if (_cats.containsKey(category)) {
+            log.warning("Requested to create category that already exists " +
+                        "[cat=" + category + "].");
+            return;
+        }
     }
 
     @Override // documentation inherited
@@ -156,14 +172,15 @@ public class PropFileItemStore extends ItemStore
         return flats;
     }
 
-    protected Category loadCategory (String fname, File propfile)
+    protected Category loadCategory (
+        String fname, File propfile, Category category)
         throws IOException
     {
         Properties props = new Properties();
         // TODO: use UTF-8 and perhaps the XML format as well
         props.load(new BufferedInputStream(new FileInputStream(propfile)));
 
-        String catname = props.getProperty("category");
+        String catname = props.getProperty("category", category.getName());
         if (catname == null) {
             log.warning("Property file missing category " +
                         "[file=" + propfile + "].");
@@ -174,7 +191,7 @@ public class PropFileItemStore extends ItemStore
         if (sufidx != -1) {
             fname = fname.substring(0, sufidx);
         }
-        Category category = new Category(catname, fname);
+        category.init(catname, fname);
         ArrayList<Item> items = new ArrayList<Item>();
         int icount = PropUtil.getIntProperty(props, "items");
         for (int ii = 0; ii < icount; ii++) {
@@ -191,10 +208,33 @@ public class PropFileItemStore extends ItemStore
         // modified recently
         synchronized (this) {
             _cats.put(category, items);
-            _catinfo.put(category, new CategoryInfo(fname, propfile));
+            _catinfo.put(category, new CategoryInfo(category, fname, propfile));
         }
 
         return category;
+    }
+
+    protected void loadJournalCategory (Category category)
+    {
+        // make sure the year directory exists
+        File propfile = new File(_propdir, category.getFile() + ".properties");
+        File parent = propfile.getParentFile();
+        if (!parent.exists()) {
+            if (!parent.mkdir()) {
+                log.warning("Failed to create journal year directory " +
+                            "[dir=" + parent + "].");
+            }
+        }
+
+        try {
+            // create the properties file if it doesn't already exist
+            // (this NOOPs if it already exists)
+            propfile.createNewFile();
+            loadCategory(category.getFile(), propfile, category);
+        } catch (IOException ioe) {
+            log.log(Level.WARNING, "Failed to load journal category " +
+                    "[file=" + propfile + "].", ioe);
+        }
     }
 
     protected void checkModified ()
@@ -210,27 +250,27 @@ public class PropFileItemStore extends ItemStore
         // then reload which will modify the catinfo table
         for (CategoryInfo catinfo : modified) {
             log.info("Reloading modified category " + catinfo.source);
-            Category cat = null;
             try {
-                cat = loadCategory(catinfo.sourceName, catinfo.source);
+                loadCategory(catinfo.sourceName, catinfo.source,
+                             catinfo.category);
+                categoryUpdated(catinfo.category);
             } catch (IOException ioe) {
                 log.log(Level.WARNING, "Failed reloading category '" +
                         catinfo.source + "'.", ioe);
-            }
-            if (cat != null) {
-                categoryUpdated(cat);
             }
         }
     }
 
     protected static class CategoryInfo
     {
+        public Category category;
         public String sourceName;
         public File source;
         public long lastModified;
 
-        public CategoryInfo (String sourceName, File source)
+        public CategoryInfo (Category category, String sourceName, File source)
         {
+            this.category = category;
             this.sourceName = sourceName;
             this.source = source;
             this.lastModified = source.lastModified();

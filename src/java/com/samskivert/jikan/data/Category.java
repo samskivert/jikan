@@ -24,9 +24,12 @@ package com.samskivert.jikan.data;
 public class Category
 {
     /** A special category for events. */
-    public static final Category EVENTS = new Category("__EVENTS__", "events");
+    public static final Category EVENTS = new Category();
 
-    public Category (String name, String file)
+    /**
+     * Initializes a category instance with the supplied name and file.
+     */
+    public void init (String name, String file)
     {
         _name = name;
         _file = file;
@@ -65,4 +68,8 @@ public class Category
     }
 
     protected String _name, _file;
+
+    static {
+        EVENTS.init("__EVENTS__", "events");
+    }
 }

@@ -18,33 +18,25 @@
 
 package com.samskivert.jikan.data;
 
-import java.util.Properties;
-import java.util.logging.Level;
-
-import static com.samskivert.jikan.Jikan.log;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * Property utility methods.
+ * A category identifier for a particular journal date.
  */
-public class PropUtil
+public class JournalCategory extends Category
 {
-    public static int getIntProperty (Properties props, String key)
+    /**
+     * Initializes a journal category entry for the specified date.
+     */
+    public void init (Date when)
     {
-        try {
-            return Integer.parseInt(props.getProperty(key, "0"));
-        } catch (Exception e) {
-            log.log(Level.WARNING, "Unable to read int '" + key + "'.", e);
-            return 0;
-        }
+        init(_nfmt.format(when), _ffmt.format(when));
     }
 
-    public static long getLongProperty (Properties props, String key)
-    {
-        try {
-            return Long.parseLong(props.getProperty(key, "0"));
-        } catch (Exception e) {
-            log.log(Level.WARNING, "Unable to read long '" + key + "'.", e);
-            return 0L;
-        }
-    }
+    protected static DateFormat _nfmt =
+        DateFormat.getDateInstance(DateFormat.MEDIUM);
+    protected static SimpleDateFormat _ffmt =
+        new SimpleDateFormat("yyyy/MM-dd");
 }

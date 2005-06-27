@@ -18,6 +18,7 @@
 
 package com.samskivert.jikan.ui;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -36,6 +37,7 @@ import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.Event;
 import com.samskivert.jikan.data.Item;
 import com.samskivert.jikan.data.ItemStore;
+import com.samskivert.jikan.data.JournalCategory;
 
 /**
  * Displays the main user interface.
@@ -77,7 +79,10 @@ public class JikanShell
             _catmap.put(category, ilist);
         }
 
-        System.out.println("Border: " + _shell.getBorderWidth());
+        JournalCategory jcat = new JournalCategory();
+        jcat.init(new Date());
+        _jlist = new ItemList(_shell, jcat);
+        _jlist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         // add a listener to our shell to note changes in size and location
         _shell.addControlListener(new ControlListener() {
@@ -117,7 +122,8 @@ public class JikanShell
     // documentation inherited from interface ItemStore.StoreListener
     public void categoryUpdated (Category category)
     {
-        final Refreshable list = _catmap.get(category);
+        final Refreshable list = (category instanceof JournalCategory) ?
+            _jlist : _catmap.get(category);
         if (list != null) {
             _display.asyncExec(new Runnable() {
                 public void run () {
@@ -129,6 +135,7 @@ public class JikanShell
 
     protected Display _display;
     protected Shell _shell;
+    protected ItemList _jlist;
 
     protected HashMap<Category,Refreshable> _catmap =
         new HashMap<Category,Refreshable>();
