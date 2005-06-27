@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
@@ -73,7 +76,32 @@ public class JikanShell
             ilist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
             _catmap.put(category, ilist);
         }
-        _shell.setSize(455, 800);
+
+        System.out.println("Border: " + _shell.getBorderWidth());
+
+        // add a listener to our shell to note changes in size and location
+        _shell.addControlListener(new ControlListener() {
+            public void controlMoved (ControlEvent e) {
+                Rectangle bounds = _shell.getBounds();
+                Rectangle trim = _shell.computeTrim(0, 0, 0, 0);
+                bounds.width -= trim.width;
+                bounds.height -= trim.height;
+                Jikan.config.saveWindowBounds(bounds);
+            }
+            public void controlResized (ControlEvent e) {
+                controlMoved(e);
+            }
+        });
+
+        // size, position and display the main window; yes all this trim
+        // hackery looks weird but without it the goddamned window doesn't
+        // stay the same size when we save and restore the bounds
+        Rectangle bounds = Jikan.config.getWindowBounds();
+        Rectangle tbounds =
+            _shell.computeTrim(0, 0, bounds.width, bounds.height);
+        bounds.width = tbounds.width;
+        bounds.height = tbounds.height;
+        _shell.setBounds(bounds);
 	_shell.open();
     }
 

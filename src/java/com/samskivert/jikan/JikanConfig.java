@@ -23,7 +23,10 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+
+import com.samskivert.util.Config;
 
 /**
  * Provides access to all of the configuration information for Jikan.
@@ -96,6 +99,30 @@ public class JikanConfig
         }
     }
 
+    /**
+     * Returns the saved bounds of the main window.
+     */
+    public Rectangle getWindowBounds ()
+    {
+        return new Rectangle(
+            _config.getValue("bounds.x", 0),
+            _config.getValue("bounds.y", 0),
+            _config.getValue("bounds.width", 455),
+            _config.getValue("bounds.height", 800));
+    }
+
+    /**
+     * Saves the preferred size of the main window.
+     */
+    public void saveWindowBounds (Rectangle bounds)
+    {
+        _config.setValue("bounds.x", bounds.x);
+        _config.setValue("bounds.y", bounds.y);
+        _config.setValue("bounds.width", bounds.width);
+        _config.setValue("bounds.height", bounds.height);
+    }
+
+    protected Config _config = new Config("jikan");
     protected Display _display;
     protected Font[] _fonts;
     protected Color _todayColor;
