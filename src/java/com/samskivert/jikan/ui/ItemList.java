@@ -49,12 +49,7 @@ public class ItemList extends Composite
         gl.numColumns = 1;
         setLayout(gl);
 
-        // add the title
-        Label label = new Label(this, 0);
-        label.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
-        label.setText(category.getName());
-        label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
+        createHeader();
         refresh();
     }
 
@@ -80,6 +75,15 @@ public class ItemList extends Composite
         // relayout our parent
         layout();
         getParent().layout();
+    }
+
+    protected void createHeader ()
+    {
+        // add the title
+        Label label = new Label(this, 0);
+        label.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
+        label.setText(_category.getName());
+        label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
 
     /**

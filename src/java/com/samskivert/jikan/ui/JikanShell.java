@@ -18,7 +18,6 @@
 
 package com.samskivert.jikan.ui;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -79,9 +78,7 @@ public class JikanShell
             _catmap.put(category, ilist);
         }
 
-        JournalCategory jcat = new JournalCategory();
-        jcat.init(new Date());
-        _jlist = new ItemList(_shell, jcat);
+        _jlist = new JournalItemList(_shell);
         _jlist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         // add a listener to our shell to note changes in size and location
@@ -135,7 +132,7 @@ public class JikanShell
 
     protected Display _display;
     protected Shell _shell;
-    protected ItemList _jlist;
+    protected JournalItemList _jlist;
 
     protected HashMap<Category,Refreshable> _catmap =
         new HashMap<Category,Refreshable>();

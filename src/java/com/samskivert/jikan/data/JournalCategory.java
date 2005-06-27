@@ -28,9 +28,9 @@ import java.util.Date;
 public class JournalCategory extends Category
 {
     /**
-     * Initializes a journal category entry for the specified date.
+     * Creates a journal category entry for the specified date.
      */
-    public void init (Date when)
+    public JournalCategory (Date when)
     {
         init(_nfmt.format(when), _ffmt.format(when));
     }
