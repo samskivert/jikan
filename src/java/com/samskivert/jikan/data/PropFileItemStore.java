@@ -62,7 +62,7 @@ public class PropFileItemStore extends ItemStore
                 checkModified();
             }
         };
-        checker.schedule(5000L, true);
+        checker.schedule(30000L, true);
     }
 
     @Override // documentation inherited

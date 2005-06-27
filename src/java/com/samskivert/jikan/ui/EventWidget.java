@@ -31,6 +31,8 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import com.samskivert.jikan.data.Event;
 
+import static com.samskivert.jikan.Jikan.log;
+
 /**
  * This is not actually a widget, but rather two widgets that work in
  * harmony.
@@ -75,8 +77,9 @@ public class EventWidget
                     _event.setWhen(when, allday);
                     if (!text.equals(ntext)) {
                         setText(ntext);
-                        getParent().layout();
                     }
+                    // force our parent to resort the events
+                    _parent.refresh();
                 } else {
                     // TODO: report an error
                     startEdit();
