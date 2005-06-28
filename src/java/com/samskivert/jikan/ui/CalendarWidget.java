@@ -77,7 +77,9 @@ public class CalendarWidget extends Canvas
         _tdate = _cal.get(Calendar.DAY_OF_YEAR);
         _tyear = _cal.get(Calendar.YEAR);
 
-        setStartDate(today);
+        // roll back a week and start there
+        _cal.add(Calendar.DATE, -7);
+        setStartDate(_cal.getTime());
 
         addMouseListener(new MouseAdapter() {
             public void mouseDown (MouseEvent event) {
