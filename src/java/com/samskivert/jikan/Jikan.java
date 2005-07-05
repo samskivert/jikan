@@ -20,11 +20,14 @@ package com.samskivert.jikan;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.swt.widgets.Display;
 
+import com.samskivert.util.Interval;
 import com.samskivert.util.StringUtil;
 
 import com.samskivert.jikan.data.Category;
@@ -37,6 +40,13 @@ import com.samskivert.jikan.ui.JikanShell;
  */
 public class Jikan
 {
+    /** Used by entities that wish to update themselves when time ticks
+     * over to a new day. */
+    public static interface DateDisplay
+    {
+        public void dateChanged ();
+    }
+
     /** We dispatch our log messages through this logger. */
     public static Logger log = Logger.getLogger("jikan");
 
@@ -56,6 +66,14 @@ public class Jikan
             home += File.separator;
         }
         return home + ".jikan";
+    }
+
+    /**
+     * Registers an entity to be notified when the date changes.
+     */
+    public static void registerDateDisplay (DateDisplay display)
+    {
+        _displays.add(display);
     }
 
     public static void main (String[] args)
@@ -85,6 +103,9 @@ public class Jikan
             store.createCategory(cat);
         }
 
+        // schedule our next date tick
+        scheduleDateTick(display);
+
         // this handles the main user interface
         JikanShell shell = new JikanShell(display);
         shell.run();
@@ -95,4 +116,37 @@ public class Jikan
         // shut down our item store
         store.shutdown();
     }
+
+    protected static void scheduleDateTick (final Display display)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        // schedule an interval to expire one second after midnight
+        long dt = cal.getTime().getTime() - System.currentTimeMillis() + 1000;
+        new Interval() {
+            public void expired () {
+                display.asyncExec(new Runnable() {
+                    public void run () {
+                        fireDateTick(display);
+                    }
+                });
+            }
+        }.schedule(dt);
+    }
+
+    protected static void fireDateTick (Display display)
+    {
+        for (DateDisplay dd : _displays) {
+            dd.dateChanged();
+        }
+        scheduleDateTick(display);
+    }
+
+    protected static ArrayList<DateDisplay> _displays =
+        new ArrayList<DateDisplay>();
 }

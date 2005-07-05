@@ -38,10 +38,20 @@ import com.samskivert.jikan.data.JournalCategory;
  * buttons.
  */
 public class JournalItemList extends ItemList
+    implements Jikan.DateDisplay
 {
     public JournalItemList (Composite parent)
     {
         super(parent, new JournalCategory(new Date()));
+
+        Jikan.registerDateDisplay(this);
+    }
+
+    // documentation inherited from interface Jikan.DateDisplay
+    public void dateChanged ()
+    {
+        // switch to the current day's journal at midnight
+        selectDay(new Date());
     }
 
     protected void createHeader ()
@@ -95,6 +105,7 @@ public class JournalItemList extends ItemList
 
     protected void selectDay (Date when)
     {
+        _when.setTime(when);
         _category = new JournalCategory(when);
         _title.setText(_category.getName());
         _header.layout();

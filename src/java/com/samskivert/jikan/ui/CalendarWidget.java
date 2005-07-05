@@ -51,10 +51,13 @@ import static com.samskivert.jikan.Jikan.log;
  * days.
  */
 public class CalendarWidget extends Canvas
+    implements Jikan.DateDisplay
 {
     public CalendarWidget (Composite parent)
     {
         super(parent, 0);
+
+        Jikan.registerDateDisplay(this);
 
         // display 5 weeks at a time
         _wcount = 5;
@@ -108,6 +111,17 @@ public class CalendarWidget extends Canvas
             }
             devents.add(event);
         }
+    }
+
+    // documentation inherited from interface Jikan.DateDisplay
+    public void dateChanged ()
+    {
+        // update our idea of "today"
+        Date today = new Date();
+        _cal.setTime(today);
+        _tdate = _cal.get(Calendar.DAY_OF_YEAR);
+        _tyear = _cal.get(Calendar.YEAR);
+        redraw();
     }
 
     @Override // documentation inherited
