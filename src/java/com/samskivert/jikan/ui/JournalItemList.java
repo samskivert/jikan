@@ -25,7 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -47,12 +47,12 @@ public class JournalItemList extends ItemList
     protected void createHeader ()
     {
         _header = new Composite(this, 0);
-        RowLayout layout = new RowLayout();
-        layout.marginLeft = layout.marginRight = 0;
-        layout.marginTop = layout.marginBottom = 0;
-        layout.type = SWT.HORIZONTAL;
-        _header.setLayout(layout);
         _header.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        GridLayout layout = new GridLayout(5, false);
+        layout.marginWidth = layout.marginHeight = 0;
+        layout.verticalSpacing = 0;
+        _header.setLayout(layout);
 
         Button back = new Button(_header, SWT.ARROW | SWT.LEFT);
         back.addSelectionListener(new SelectionAdapter() {
@@ -71,12 +71,31 @@ public class JournalItemList extends ItemList
                 adjustDate(1);
             }
         });
+
+        Composite spacer = new Composite(_header, 0);
+        GridData gd = new GridData();
+        gd.horizontalAlignment = GridData.FILL;
+        gd.grabExcessHorizontalSpace = true;
+        gd.heightHint = 1;
+        spacer.setLayoutData(gd);
+
+        Button today = new Button(_header, SWT.ARROW | SWT.DOWN);
+        today.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected (SelectionEvent e) {
+                selectDay(new Date());
+            }
+        });
     }
 
     protected void adjustDate (int adjust)
     {
         _when.add(Calendar.DATE, adjust);
-        _category = new JournalCategory(_when.getTime());
+        selectDay(_when.getTime());
+    }
+
+    protected void selectDay (Date when)
+    {
+        _category = new JournalCategory(when);
         _title.setText(_category.getName());
         _header.layout();
         refresh();
