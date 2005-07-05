@@ -53,6 +53,12 @@ public class ItemList extends Composite
         refresh();
     }
 
+    /** Returns the category being displayed by this list. */
+    public Category getCategory ()
+    {
+        return _category;
+    }
+
     // documentation inherited from interface JikanShell.Refreshable
     public void refresh ()
     {

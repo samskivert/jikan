@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.samskivert.util.StringUtil;
 
+import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.ItemStore;
 import com.samskivert.jikan.data.PropFileItemStore;
 import com.samskivert.jikan.ui.JikanShell;
@@ -77,11 +78,21 @@ public class Jikan
             // TODO: report the error
         }
 
+        // make sure we have our default category
+        if (!store.getCategories().hasNext()) {
+            Category cat = new Category();
+            cat.init("General", "general");
+            store.createCategory(cat);
+        }
+
         // this handles the main user interface
         JikanShell shell = new JikanShell(display);
         shell.run();
 
         config.dispose();
 	display.dispose();
+
+        // shut down our item store
+        store.shutdown();
     }
 }

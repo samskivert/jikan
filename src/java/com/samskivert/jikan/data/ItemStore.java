@@ -71,10 +71,20 @@ public abstract class ItemStore
     public abstract void deleteItem (Item item);
 
     /**
-     * Called by an item when it is modified. The repository should mark
-     * the appropriate category as modified and queue up a flush.
+     * Called by an item when it is modified. The repository will mark the
+     * appropriate category as modified and queue up a flush.
      */
-    public abstract void itemModified (Item item);
+    public void itemModified (Item item)
+    {
+        categoryModified(item.getCategory());
+    }
+
+    /**
+     * Called when a category is modified (meaning its name was changed).
+     * The repository should mark the category as modified and queue up a
+     * flush.
+     */
+    public abstract void categoryModified (Category cat);
 
     /**
      * Writes all modified categories to the persistent store.

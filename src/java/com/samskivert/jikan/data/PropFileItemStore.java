@@ -91,6 +91,16 @@ public class PropFileItemStore extends ItemStore
                         "[cat=" + category + "].");
             return;
         }
+
+        File catfile = new File(_propdir, category.getFile() + ".properties");
+        ArrayList<Item> items = new ArrayList<Item>();
+        synchronized (this) {
+            _cats.put(category, items);
+            _catinfo.put(category, new CategoryInfo(
+                             category, category.getFile(), catfile));
+        }
+
+        categoryModified(category);
     }
 
     @Override // documentation inherited
@@ -127,9 +137,9 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
-    public synchronized void itemModified (Item item)
+    public void categoryModified (Category cat)
     {
-        _modified.add(item.getCategory());
+        _modified.add(cat);
         queueFlush();
     }
 

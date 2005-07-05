@@ -18,7 +18,6 @@
 
 package com.samskivert.jikan.ui;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
@@ -62,21 +61,12 @@ public class JikanShell
         CalendarWidget cal = new CalendarWidget(_shell);
         cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        EventList elist = new EventList(_shell);
-        elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        cal.setEvents(elist, Jikan.store.getItems(Category.EVENTS));
-        _catmap.put(Category.EVENTS, elist);
+        _elist = new EventList(_shell);
+        _elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        cal.setEvents(_elist, Jikan.store.getItems(Category.EVENTS));
 
-        Iterator<Category> iter = Jikan.store.getCategories();
-        while (iter.hasNext()) {
-            Category category = iter.next();
-            if (category.equals(Category.EVENTS)) {
-                continue;
-            }
-            ItemList ilist = new ItemList(_shell, category);
-            ilist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-            _catmap.put(category, ilist);
-        }
+        _clist = new CategoryItemList(_shell);
+        _clist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         _jlist = new JournalItemList(_shell);
         _jlist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -119,12 +109,19 @@ public class JikanShell
     // documentation inherited from interface ItemStore.StoreListener
     public void categoryUpdated (Category category)
     {
-        final Refreshable list = (category instanceof JournalCategory) ?
-            _jlist : _catmap.get(category);
+        Refreshable list = null;
+        if (category instanceof JournalCategory) {
+            list = _jlist;
+        } else if (category.equals(_clist.getCategory())) {
+            list = _clist;
+        } else if (category.equals(Category.EVENTS)) {
+            list = _elist;
+        }
         if (list != null) {
+            final Refreshable flist = list;
             _display.asyncExec(new Runnable() {
                 public void run () {
-                    list.refresh();
+                    flist.refresh();
                 }
             });
         }
@@ -132,8 +129,7 @@ public class JikanShell
 
     protected Display _display;
     protected Shell _shell;
+    protected EventList _elist;
+    protected CategoryItemList _clist;
     protected JournalItemList _jlist;
-
-    protected HashMap<Category,Refreshable> _catmap =
-        new HashMap<Category,Refreshable>();
 }
