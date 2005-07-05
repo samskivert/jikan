@@ -122,6 +122,22 @@ public class JikanConfig
         _config.setValue("bounds.height", bounds.height);
     }
 
+    /**
+     * Returns the most recently selected category.
+     */
+    public String getSelectedCategory ()
+    {
+        return _config.getValue("category", "General");
+    }
+
+    /**
+     * Updates the most recently selected category.
+     */
+    public void setSelectedCategory (String category)
+    {
+        _config.setValue("category", category);
+    }
+
     protected Config _config = new Config("jikan");
     protected Display _display;
     protected Font[] _fonts;

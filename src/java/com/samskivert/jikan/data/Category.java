@@ -22,6 +22,7 @@ package com.samskivert.jikan.data;
  * Contains the information associated with a category of items.
  */
 public class Category
+    implements Comparable<Category>
 {
     /** A special category for events. */
     public static final Category EVENTS = new Category();
@@ -60,6 +61,12 @@ public class Category
     public boolean equals (Object other)
     {
         return _file.equals(((Category)other)._file);
+    }
+
+    // documentation inherited from interface Comparable
+    public int compareTo (Category other)
+    {
+        return _name.compareTo(other._name);
     }
 
     public String toString ()
