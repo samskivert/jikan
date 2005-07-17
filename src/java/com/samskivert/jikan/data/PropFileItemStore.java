@@ -21,6 +21,7 @@ package com.samskivert.jikan.data;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -205,7 +206,11 @@ public class PropFileItemStore extends ItemStore
     {
         Properties props = new Properties();
         // TODO: use UTF-8 and perhaps the XML format as well
-        props.load(new BufferedInputStream(new FileInputStream(propfile)));
+        try {
+            props.load(new BufferedInputStream(new FileInputStream(propfile)));
+        } catch (FileNotFoundException fnfe) {
+            // no problem; just proceed with an empty properties file
+        }
 
         String catname = props.getProperty("category", category.getName());
         if (catname == null) {
@@ -258,9 +263,6 @@ public class PropFileItemStore extends ItemStore
         }
 
         try {
-            // create the properties file if it doesn't already exist
-            // (this NOOPs if it already exists)
-            propfile.createNewFile();
             loadCategory(category.getFile(), propfile, category);
         } catch (IOException ioe) {
             log.log(Level.WARNING, "Failed to load journal category " +
