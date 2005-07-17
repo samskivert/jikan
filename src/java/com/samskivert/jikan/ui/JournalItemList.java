@@ -59,10 +59,14 @@ public class JournalItemList extends ItemList
         _header = new Composite(this, 0);
         _header.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        GridLayout layout = new GridLayout(5, false);
+        GridLayout layout = new GridLayout(6, false);
         layout.marginWidth = layout.marginHeight = 0;
         layout.verticalSpacing = 0;
         _header.setLayout(layout);
+
+        Label jlabel = new Label(_header, 0);
+        jlabel.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
+        jlabel.setText("Journal:");
 
         Button back = new Button(_header, SWT.ARROW | SWT.LEFT);
         back.addSelectionListener(new SelectionAdapter() {
@@ -71,16 +75,16 @@ public class JournalItemList extends ItemList
             }
         });
 
-        _title = new Label(_header, 0);
-        _title.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
-        _title.setText(_category.getName());
-
         Button forward = new Button(_header, SWT.ARROW | SWT.RIGHT);
         forward.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected (SelectionEvent e) {
                 adjustDate(1);
             }
         });
+
+        _title = new Label(_header, 0);
+        _title.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
+        _title.setText(_category.getName());
 
         Composite spacer = new Composite(_header, 0);
         GridData gd = new GridData();

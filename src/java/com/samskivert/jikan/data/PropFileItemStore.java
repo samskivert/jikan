@@ -58,6 +58,19 @@ public class PropFileItemStore extends ItemStore
             }
         }
 
+        // if we have no categories at all (we're just starting up),
+        // create a general category
+        if (_cats.size() == 0) {
+            Category general = new Category();
+            general.init("General", "general");
+            createCategory(general);
+        }
+
+        // make sure we have an events category
+        if (!_cats.containsKey(Category.EVENTS)) {
+            createCategory(Category.EVENTS);
+        }
+
         // queue up an interval to check for modifications periodically
         Interval checker = new Interval() {
             public void expired () {
