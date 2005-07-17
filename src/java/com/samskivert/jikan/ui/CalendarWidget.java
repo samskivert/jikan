@@ -110,7 +110,6 @@ public class CalendarWidget extends Canvas
 
     public void refresh ()
     {
-        System.err.println("Refreshing calendar.");
         _events.clear();
         Iterator<Item> eiter = Jikan.store.getItems(Category.EVENTS);
         while (eiter.hasNext()) {
