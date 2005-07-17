@@ -41,8 +41,12 @@ public class JikanConfig
      * interface. */
     public static final int ITEM_FONT = 1;
 
+    /** A constant indicating a font used in a particular part of the user
+     * interface. */
+    public static final int ICON_FONT = 2;
+
     /** Indicates the total number of font types. */
-    public static final int FONT_TYPES = 2;
+    public static final int FONT_TYPES = 3;
 
     /**
      * Initializes the configuration and creates all the necessary user
@@ -53,6 +57,7 @@ public class JikanConfig
         _display = display;
         _fonts = new Font[FONT_TYPES];
         _todayColor = new Color(display, new RGB(0x99, 0xCC, 0xFF));
+        _iconColor = new Color(display, new RGB(0xCC, 0xFF, 0x99));
     }
 
     /**
@@ -61,7 +66,19 @@ public class JikanConfig
     public Font getFont (int type)
     {
         if (_fonts[type] == null) {
-            FontData data = new FontData("Helvetica", 12, SWT.BOLD);
+            FontData data;
+            switch (type) {
+            case CATEGORY_FONT:
+                data = new FontData("Helvetica", 12, SWT.BOLD);
+                break;
+            default:
+            case ITEM_FONT:
+                data = new FontData("Helvetica", 12, SWT.BOLD);
+                break;
+            case ICON_FONT:
+                data = new FontData("Helvetica", 8, SWT.NORMAL);
+                break;
+            }
             _fonts[type] = new Font(_display, data);
         }
         return _fonts[type];
@@ -84,6 +101,14 @@ public class JikanConfig
     public Color getTodayColor ()
     {
         return _todayColor;
+    }
+
+    /**
+     * Returns the color in which to render the event icons.
+     */
+    public Color getIconColor ()
+    {
+        return _iconColor;
     }
 
     /**
@@ -141,5 +166,5 @@ public class JikanConfig
     protected Config _config = new Config("jikan");
     protected Display _display;
     protected Font[] _fonts;
-    protected Color _todayColor;
+    protected Color _todayColor, _iconColor;
 }

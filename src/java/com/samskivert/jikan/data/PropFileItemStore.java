@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -106,7 +107,8 @@ public class PropFileItemStore extends ItemStore
     @Override // documentation inherited
     public synchronized void addItem (Item item)
     {
-        ArrayList<Item> items = _cats.get(item.getCategory());
+        Category category = item.getCategory();
+        ArrayList<Item> items = _cats.get(category);
         if (items == null) {
             log.warning("Requested to add item to non-existent category " +
                         "[item=" + item + "].");
@@ -114,8 +116,7 @@ public class PropFileItemStore extends ItemStore
         }
         items.add(item);
         item.setStore(this);
-        _modified.add(item.getCategory());
-        queueFlush();
+        categoryModified(category);
     }
 
     @Override // documentation inherited
@@ -137,8 +138,24 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
+    public int getItemIndex (Item item)
+    {
+        ArrayList<Item> items = _cats.get(item.getCategory());
+        if (items == null) {
+            log.warning("Requested index of item in non-existent category " +
+                        "[item=" + item + "].");
+            return -1;
+        }
+        return items.indexOf(item);
+    }
+
+    @Override // documentation inherited
     public void categoryModified (Category cat)
     {
+        // the events category must be resorted when modified
+        if (cat.equals(Category.EVENTS)) {
+            Collections.sort(_cats.get(cat));
+        }
         _modified.add(cat);
         queueFlush();
     }
@@ -212,6 +229,10 @@ public class PropFileItemStore extends ItemStore
                 items.add(item = new Item(category, props, ii));
             }
             item.setStore(this);
+        }
+
+        if (category.equals(Category.EVENTS)) {
+            Collections.sort(items);
         }
 
         // TODO: merge loaded data with in-memory category if it has been

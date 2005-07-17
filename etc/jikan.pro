@@ -8,7 +8,6 @@
 
 -libraryjars <java.home>/lib/rt.jar
 -libraryjars lib/swt.jar
--libraryjars lib/swt-pi.jar
 
 -dontoptimize
 -dontobfuscate

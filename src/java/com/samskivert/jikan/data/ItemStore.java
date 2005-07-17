@@ -71,6 +71,11 @@ public abstract class ItemStore
     public abstract void deleteItem (Item item);
 
     /**
+     * Returns this item's index in its category list.
+     */
+    public abstract int getItemIndex (Item item);
+
+    /**
      * Called by an item when it is modified. The repository will mark the
      * appropriate category as modified and queue up a flush.
      */

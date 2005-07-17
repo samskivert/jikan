@@ -24,6 +24,7 @@ import java.util.Properties;
  * Contains information on a particular item.
  */
 public class Item
+    implements Comparable<Item>
 {
     public Item (Category category, String text)
     {
@@ -58,6 +59,13 @@ public class Item
     public String toString ()
     {
         return "[cat=" + _category.getName() + ", text=" + _text + "]";
+    }
+
+    // documentation inherited from interface Comparable
+    public int compareTo (Item other)
+    {
+        // some day we'll add a total ordering
+        return _text.compareTo(other._text);
     }
 
     protected void setStore (ItemStore store)

@@ -18,16 +18,12 @@
 
 package com.samskivert.jikan.ui;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
-import com.samskivert.util.CollectionUtil;
 
 import com.samskivert.jikan.Jikan;
 import com.samskivert.jikan.data.Category;
@@ -47,8 +43,8 @@ public class EventList extends Composite
         super(parent, 0);
 
         GridLayout gl = new GridLayout();
-        gl.numColumns = 2;
-        gl.horizontalSpacing = 0;
+        gl.numColumns = 3;
+        gl.horizontalSpacing = 5;
         gl.verticalSpacing = 0;
         setLayout(gl);
 
@@ -59,7 +55,7 @@ public class EventList extends Composite
     {
         _nevent = new Event("<new>", true, when, 0);
         Jikan.store.addItem(_nevent);
-        refresh();
+        Jikan.shell.categoryUpdated(_nevent.getCategory());
     }
 
     /**
@@ -70,11 +66,10 @@ public class EventList extends Composite
         Event event = widget.getEvent();
         if (event != null) {
             Jikan.store.deleteItem(event);
+            Jikan.shell.categoryUpdated(event.getCategory());
         } else {
             log.warning("Requested to delete event widget with no event.");
         }
-        widget.dispose();
-        getParent().layout();
     }
 
     // documentation inherited from interface JikanShell.Refreshable
@@ -86,21 +81,15 @@ public class EventList extends Composite
             children[ii].dispose();
         }
 
-        Iterator<Item> events = Jikan.store.getItems(Category.EVENTS);
-        ArrayList<Event> elist = new ArrayList<Event>();
-        CollectionUtil.addAll(elist, events);
-        Collections.sort(elist);
-
-        for (Event event : elist) {
+        Iterator<Item> eiter = Jikan.store.getItems(Category.EVENTS);
+        while (eiter.hasNext()) {
+            Event event = (Event)eiter.next();
             EventWidget ew = new EventWidget(this, event);
             if (event == _nevent) {
                 ew.edit();
                 _nevent = null;
             }
         }
-
-//         // and add a blank one at the bottom
-//         addBlankItem();
 
         // relayout our parent
         layout();

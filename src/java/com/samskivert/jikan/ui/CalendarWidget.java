@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -40,8 +41,10 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
+import com.samskivert.jikan.data.Category;
 import com.samskivert.jikan.data.Event;
 import com.samskivert.jikan.data.Item;
+import com.samskivert.jikan.JikanConfig;
 import com.samskivert.jikan.Jikan;
 
 import static com.samskivert.jikan.Jikan.log;
@@ -51,7 +54,7 @@ import static com.samskivert.jikan.Jikan.log;
  * days.
  */
 public class CalendarWidget extends Canvas
-    implements Jikan.DateDisplay
+    implements Jikan.DateDisplay, JikanShell.Refreshable
 {
     public CalendarWidget (Composite parent)
     {
@@ -99,18 +102,27 @@ public class CalendarWidget extends Canvas
         _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
     }
 
-    public void setEvents (EventList elist, Iterator<Item> events)
+    public void setEvents (EventList elist)
     {
         _elist = elist;
+        refresh();
+    }
 
-        while (events.hasNext()) {
-            Event event = (Event)events.next();
+    public void refresh ()
+    {
+        System.err.println("Refreshing calendar.");
+        _events.clear();
+        Iterator<Item> eiter = Jikan.store.getItems(Category.EVENTS);
+        while (eiter.hasNext()) {
+            Event event = (Event)eiter.next();
             List<Event> devents = _events.get(event.getDate());
             if (devents == null) {
-                _events.put(event.getDate(), devents = new ArrayList<Event>());
+                _events.put(event.getDate(),
+                            devents = new ArrayList<Event>());
             }
             devents.add(event);
         }
+        redraw();
     }
 
     // documentation inherited from interface Jikan.DateDisplay
@@ -165,9 +177,9 @@ public class CalendarWidget extends Canvas
         return (wHint < 0) ? _psize : new Point(wHint, (wHint/7)*6);
     }
 
-    protected void paint (PaintEvent event)
+    protected void paint (PaintEvent pevent)
     {
-        GC gc = event.gc;
+        GC gc = pevent.gc;
 
         // draw the days of the week
         for (int dd = 0; dd < 7; dd++) {
@@ -178,16 +190,24 @@ public class CalendarWidget extends Canvas
         int width = getSize().x, cheight = (_wcount*_csize);
         gc.drawRectangle(0, _hheight, width-1, cheight-1);
 
-        // draw the verticla lines
+        // draw the vertical lines
         int xx = _csize, yy = _hheight;
         for (int ii = 0; ii < 6; ii++) {
             gc.drawLine(xx, yy, xx, _hheight+cheight-1);
             xx += _csize;
         }
 
-        // draw the horizontal lines and the text
         _cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         _cal.set(Calendar.WEEK_OF_YEAR, _sweek);
+        _cal.set(Calendar.HOUR_OF_DAY, 0);
+        _cal.set(Calendar.MINUTE, 0);
+        _cal.set(Calendar.SECOND, 0);
+        _cal.set(Calendar.MILLISECOND, 0);
+
+        // determine the size of our event icons
+        int isize = EventWidget.getIconSize();
+
+        // draw the horizontal lines and the text
         Color bgcolor = gc.getBackground();
         int month = -1;
         for (int ii = 0; ii < _wcount; ii++) {
@@ -199,17 +219,38 @@ public class CalendarWidget extends Canvas
                     gc.fillRectangle(xx+1, yy+1, _csize-1, _csize-1);
                     gc.setBackground(bgcolor);
                 }
-                String date;
+                String dstr;
                 int dmonth = _cal.get(Calendar.MONTH);
+                Date date = _cal.getTime();
                 if (dmonth != month) {
-                    date = _sfmt.format(_cal.getTime());
+                    dstr = _sfmt.format(date);
                     month = dmonth;
                 } else {
-                    date = _dfmt.format(_cal.getTime());
+                    dstr = _dfmt.format(date);
                 }
                 _cal.add(Calendar.DATE, 1);
-                Point te = gc.stringExtent(date);
-                gc.drawString(date, xx + _csize - te.x - 3, yy + 3, true);
+
+                // draw our text and icons antialiased
+                gc.setAntialias(SWT.ON);
+
+                // draw the date
+                gc.setFont(getFont());
+                Point te = gc.stringExtent(dstr);
+                gc.drawString(dstr, xx + _csize - te.x - 3, yy + 3, true);
+
+                // draw any events on this date
+                List<Event> events = _events.get(date);
+                if (events != null) {
+                    for (Event event : events) {
+                        // TODO: properly layout multiple same day events
+                        EventWidget.paintIcon(
+                            gc, event, xx + (_csize-isize)/2,
+                            yy + (_csize-isize)/2);
+                    }
+                }
+
+                gc.setAntialias(SWT.DEFAULT);
+
                 xx += _csize;
             }
             yy += _csize;
@@ -237,6 +278,7 @@ public class CalendarWidget extends Canvas
     protected int _sweek;
     protected int _tdate, _tyear;
     protected int _hheight, _csize, _wcount;
+
     protected HashMap<Date,List<Event>> _events =
         new HashMap<Date,List<Event>>();
 

@@ -28,7 +28,6 @@ import org.eclipse.swt.graphics.Color;
  * Extends an item with the notion of date (and possibly time).
  */
 public class Event extends Item
-    implements Comparable<Event>
 {
     public Event (String text, boolean allday, Date when, int duration)
     {
@@ -82,6 +81,7 @@ public class Event extends Item
     {
         if (!when.equals(_when) || allday != _allday) {
             _when = when;
+            _date = normalize(_when);
             _allday = allday;
             notifyModified();
         }
@@ -115,9 +115,9 @@ public class Event extends Item
     }
 
     // documentation inherited from interface Comparable
-    public int compareTo (Event other)
+    public int compareTo (Item other)
     {
-        return _when.compareTo(other._when);
+        return _when.compareTo(((Event)other)._when);
     }
 
     public String toString ()
@@ -138,10 +138,10 @@ public class Event extends Item
     protected Date normalize (Date date)
     {
         _cal.setTime(date);
-        _cal.set(Calendar.HOUR, 0);
-        _cal.set(Calendar.MINUTE, 0);
-        _cal.set(Calendar.SECOND, 0);
         _cal.set(Calendar.MILLISECOND, 0);
+        _cal.set(Calendar.SECOND, 0);
+        _cal.set(Calendar.MINUTE, 0);
+        _cal.set(Calendar.HOUR_OF_DAY, 0);
         return _cal.getTime();
     }
 

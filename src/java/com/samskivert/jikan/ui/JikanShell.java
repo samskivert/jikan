@@ -58,12 +58,12 @@ public class JikanShell
 
         Jikan.store.setStoreListener(this);
 
-        CalendarWidget cal = new CalendarWidget(_shell);
-        cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        _cal = new CalendarWidget(_shell);
+        _cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         _elist = new EventList(_shell);
         _elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        cal.setEvents(_elist, Jikan.store.getItems(Category.EVENTS));
+        _cal.setEvents(_elist);
 
         _clist = new CategoryItemList(_shell);
         _clist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -109,19 +109,21 @@ public class JikanShell
     // documentation inherited from interface ItemStore.StoreListener
     public void categoryUpdated (Category category)
     {
-        Refreshable list = null;
+        Refreshable[] list = null;
         if (category instanceof JournalCategory) {
-            list = _jlist;
+            list = new Refreshable[] { _jlist };
         } else if (category.equals(_clist.getCategory())) {
-            list = _clist;
+            list = new Refreshable[] { _clist };
         } else if (category.equals(Category.EVENTS)) {
-            list = _elist;
+            list = new Refreshable[] { _cal, _elist };
         }
         if (list != null) {
-            final Refreshable flist = list;
+            final Refreshable[] flist = list;
             _display.asyncExec(new Runnable() {
                 public void run () {
-                    flist.refresh();
+                    for (int ii = 0; ii < flist.length; ii++) {
+                        flist[ii].refresh();
+                    }
                 }
             });
         }
@@ -129,6 +131,7 @@ public class JikanShell
 
     protected Display _display;
     protected Shell _shell;
+    protected CalendarWidget _cal;
     protected EventList _elist;
     protected CategoryItemList _clist;
     protected JournalItemList _jlist;

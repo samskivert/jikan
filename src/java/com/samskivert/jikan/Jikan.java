@@ -53,6 +53,9 @@ public class Jikan
     /** Provides access to all of our configuration. */
     public static JikanConfig config;
 
+    /** Manages our user interface. */
+    public static JikanShell shell;
+
     /** Provides access to our items. */
     public static ItemStore store;
 
@@ -107,7 +110,7 @@ public class Jikan
         scheduleDateTick(display);
 
         // this handles the main user interface
-        JikanShell shell = new JikanShell(display);
+        shell = new JikanShell(display);
         shell.run();
 
         config.dispose();
