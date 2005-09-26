@@ -78,14 +78,8 @@ public class CalendarWidget extends Canvas
             }
         }
 
-        Date today = new Date();
-        _cal.setTime(today);
-        _tdate = _cal.get(Calendar.DAY_OF_YEAR);
-        _tyear = _cal.get(Calendar.YEAR);
-
-        // roll back a week and start there
-        _cal.add(Calendar.DATE, -7);
-        setStartDate(_cal.getTime());
+        // update our internal date counters to start
+        dateChanged();
 
         addMouseListener(new MouseAdapter() {
             public void mouseDown (MouseEvent event) {
@@ -94,12 +88,6 @@ public class CalendarWidget extends Canvas
                 }
             }
         });
-    }
-
-    public void setStartDate (Date when)
-    {
-        _cal.setTime(when);
-        _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
     }
 
     public void setEvents (EventList elist)
@@ -132,6 +120,11 @@ public class CalendarWidget extends Canvas
         _cal.setTime(today);
         _tdate = _cal.get(Calendar.DAY_OF_YEAR);
         _tyear = _cal.get(Calendar.YEAR);
+
+        // and update our starting week as well
+        _cal.add(Calendar.DATE, -7);
+        _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
+
         redraw();
     }
 
