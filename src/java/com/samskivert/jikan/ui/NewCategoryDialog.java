@@ -60,7 +60,7 @@ public class NewCategoryDialog
         create.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected (SelectionEvent e) {
                 String name = _text.getText().trim();
-                if (StringUtil.blank(name)) {
+                if (StringUtil.isBlank(name)) {
                     return;
                 }
                 Category cat = new Category();

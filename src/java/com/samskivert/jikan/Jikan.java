@@ -65,7 +65,7 @@ public class Jikan
     public static String localDataDir ()
     {
         String home = System.getProperty("user.home");
-        if (!StringUtil.blank(home)) {
+        if (!StringUtil.isBlank(home)) {
             home += File.separator;
         }
         return home + ".jikan";
@@ -133,7 +133,7 @@ public class Jikan
         long dt = cal.getTime().getTime() - System.currentTimeMillis() + 1000;
         new Interval() {
             public void expired () {
-                display.asyncExec(new Runnable() {
+                display.asyncExec(new java.lang.Runnable() {
                     public void run () {
                         fireDateTick(display);
                     }
