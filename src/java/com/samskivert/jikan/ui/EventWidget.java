@@ -62,20 +62,14 @@ public class EventWidget
         int eidx = Jikan.store.getItemIndex(event);
         String estr = String.valueOf(eidx+1);
         int size = getIconSize();
-        Point ext = gc.textExtent(estr, SWT.DRAW_TRANSPARENT);
-        Color obg = gc.getBackground();
         gc.setFont(Jikan.config.getFont(JikanConfig.ICON_FONT));
+        Point ext = gc.stringExtent(estr);
+        Color obg = gc.getBackground();
         gc.setBackground(Jikan.config.getIconColor());
         gc.fillOval(x, y, size-1, size-1);
         gc.setBackground(obg);
         gc.drawOval(x, y, size-1, size-1);
         int dx = (size-ext.x)/2, dy = (size-ext.y)/2;
-        // we add one on Linux for the ultra hacky reason that the fonts
-        // claim to be wider and taller than what is really rendered
-        if (RunAnywhere.isLinux()) {
-            dx++;
-            dy++;
-        }
         gc.drawString(estr, x + dx, y + dy, true);
     }
 
