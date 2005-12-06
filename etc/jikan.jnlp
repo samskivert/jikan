@@ -32,7 +32,7 @@
     <property name="java.library.path" value="." />
   </resources> 
   <resources os="Mac OS X">
-    <nativelib href="swt-libis-macosx.jar"/>
+    <nativelib href="swt-libs-macosx.jar"/>
     <jar href="swt-macosx.jar"/>
     <property name="java.library.path" value="." />
   </resources> 
