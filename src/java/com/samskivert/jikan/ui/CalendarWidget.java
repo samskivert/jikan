@@ -124,6 +124,7 @@ public class CalendarWidget extends Canvas
         // and update our starting week as well
         _cal.add(Calendar.DATE, -7);
         _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
+        _syear = _cal.get(Calendar.YEAR);
 
         redraw();
     }
@@ -189,7 +190,7 @@ public class CalendarWidget extends Canvas
             xx += _csize;
         }
 
-        _cal.set(Calendar.YEAR, _tyear);
+        _cal.set(Calendar.YEAR, _syear);
         _cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         _cal.set(Calendar.WEEK_OF_YEAR, _sweek);
         _cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -261,7 +262,7 @@ public class CalendarWidget extends Canvas
     {
         // determine which day the user clicked on
         int row = (cy-_hheight) / _csize, col = Math.min(cx / _csize, 6);
-        _cal.set(Calendar.YEAR, _tyear);
+        _cal.set(Calendar.YEAR, _syear);
         _cal.set(Calendar.WEEK_OF_YEAR, _sweek + row);
         _cal.set(Calendar.DAY_OF_WEEK, col + 1);
         _elist.createEvent(_cal.getTime());
@@ -269,7 +270,7 @@ public class CalendarWidget extends Canvas
 
     protected EventList _elist;
 
-    protected int _sweek;
+    protected int _sweek, _syear;
     protected int _tdate, _tyear;
     protected int _hheight, _csize, _wcount;
 
