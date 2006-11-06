@@ -9,6 +9,7 @@
 -libraryjars <java.home>/lib/rt.jar
 -libraryjars lib/swt.jar
 
+-dontskipnonpubliclibraryclasses
 -dontoptimize
 -dontobfuscate
 
