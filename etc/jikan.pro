@@ -3,17 +3,17 @@
 #
 # Proguard configuration file for Jikan
 
--injars lib/samskivert.jar(!META-INF/*,!**/velocity/**,!**/xml/**)
--injars dist/jikan.jar(!META-INF/*)
+-injars ../lib/samskivert.jar(!META-INF/*,!**/velocity/**,!**/xml/**)
+-injars ../dist/jikan.jar(!META-INF/*)
 
 -libraryjars <java.home>/lib/rt.jar
--libraryjars lib/swt.jar
+-libraryjars ../lib/swt-macosx.jar
 
 -dontskipnonpubliclibraryclasses
 -dontoptimize
 -dontobfuscate
 
--outjars dist/jikan-pro.jar
+-outjars ../dist/jikan-pro.jar
 
 -keep public class * extends java.lang.Enum {
     *;

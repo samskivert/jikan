@@ -40,8 +40,7 @@ import com.samskivert.jikan.ui.JikanShell;
  */
 public class Jikan
 {
-    /** Used by entities that wish to update themselves when time ticks
-     * over to a new day. */
+    /** Used by entities that wish to update themselves when time ticks over to a new day. */
     public static interface DateDisplay
     {
         public void dateChanged ();
@@ -150,6 +149,5 @@ public class Jikan
         scheduleDateTick(display);
     }
 
-    protected static ArrayList<DateDisplay> _displays =
-        new ArrayList<DateDisplay>();
+    protected static ArrayList<DateDisplay> _displays = new ArrayList<DateDisplay>();
 }

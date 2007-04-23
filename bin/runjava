@@ -35,6 +35,9 @@ if (! -d $jhome || ! -x "$jhome/bin/java") {
 my $java = "$jhome/bin/java";
 my $jlib = "$jhome/lib/classes.zip";
 my $jargs = "-Djava.library.path=$root/lib/native";
+if (`uname` =~ /Darwin/) {
+    $jargs .= " -XstartOnFirstThread";
+}
 
 # the classpath needs to start with .
 my $classpath = "$root:$root/dist/classes";

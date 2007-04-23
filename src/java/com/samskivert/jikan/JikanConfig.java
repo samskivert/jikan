@@ -76,7 +76,7 @@ public class JikanConfig
                 data = new FontData("Helvetica", 12, SWT.BOLD);
                 break;
             case ICON_FONT:
-                data = new FontData("Helvetica", 8, SWT.NORMAL);
+                data = new FontData("Helvetica", 9, SWT.NORMAL);
                 break;
             }
             _fonts[type] = new Font(_display, data);
