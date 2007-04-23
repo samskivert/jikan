@@ -77,6 +77,10 @@
     <taskdef resource="proguard/ant/task.properties"
              classpath="lib/proguard.jar"/>
     <proguard configuration="etc/jikan.pro"/>
+  </target>
+
+  <!-- creates the JNLP directory, populates it -->
+  <target name="install" depends="proguard">
     <copy todir="${web_dir}">
       <fileset dir="dist" includes="jikan-pro.jar"/>
       <fileset dir="lib/native" includes="*.jar"/>
