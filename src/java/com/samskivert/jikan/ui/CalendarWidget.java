@@ -222,9 +222,11 @@ public class CalendarWidget extends Canvas
                 String dstr;
                 int dmonth = _cal.get(Calendar.MONTH);
                 Date date = _cal.getTime();
+                Font font = Jikan.config.getFont(JikanConfig.DATE_FONT);
                 if (dmonth != month) {
                     dstr = _sfmt.format(date);
                     month = dmonth;
+                    font = Jikan.config.getFont(JikanConfig.MONTH_FONT);
                 } else {
                     dstr = _dfmt.format(date);
                 }
@@ -234,7 +236,7 @@ public class CalendarWidget extends Canvas
                 gc.setAntialias(SWT.ON);
 
                 // draw the date
-                gc.setFont(getFont());
+                gc.setFont(font);
                 Point te = gc.stringExtent(dstr);
                 gc.drawString(dstr, xx + _csize - te.x - 3, yy + 3, true);
 

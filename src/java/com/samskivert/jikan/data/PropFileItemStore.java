@@ -177,9 +177,9 @@ public class PropFileItemStore extends ItemStore
     @Override // documentation inherited
     public void flushModified ()
     {
-        for (Tuple tup : flattenCategories()) {
-            Category category = (Category)tup.left;
-            Properties props = (Properties)tup.right;
+        for (Tuple<Category,Properties> tup : flattenCategories()) {
+            Category category = tup.left;
+            Properties props = tup.right;
             CategoryInfo catinfo = _catinfo.get(category);
             log.info("Flushing " + category);
             try {
@@ -195,9 +195,9 @@ public class PropFileItemStore extends ItemStore
         }            
     }
 
-    protected synchronized ArrayList<Tuple> flattenCategories ()
+    protected synchronized ArrayList<Tuple<Category,Properties>> flattenCategories ()
     {
-        ArrayList<Tuple> flats = new ArrayList<Tuple>();
+        ArrayList<Tuple<Category,Properties>> flats = new ArrayList<Tuple<Category,Properties>>();
         for (Iterator<Category> iter = _modified.iterator(); iter.hasNext(); ) {
             Category category = iter.next();
             Properties props = new Properties();
@@ -208,7 +208,7 @@ public class PropFileItemStore extends ItemStore
                 item.store(props, idx++);
             }
             iter.remove();
-            flats.add(new Tuple(category, props));
+            flats.add(new Tuple<Category,Properties>(category, props));
         }
         return flats;
     }

@@ -7,7 +7,7 @@
 -injars ../dist/jikan.jar(!META-INF/*)
 
 -libraryjars <java.home>/lib/rt.jar
--libraryjars ../lib/swt-macosx.jar
+-libraryjars ../lib/swt.jar
 
 -dontskipnonpubliclibraryclasses
 -dontoptimize

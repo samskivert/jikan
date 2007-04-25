@@ -26,27 +26,33 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
-import com.samskivert.util.Config;
+import com.samskivert.util.PrefsConfig;
 
 /**
  * Provides access to all of the configuration information for Jikan.
  */
 public class JikanConfig
 {
-    /** A constant indicating a font used in a particular part of the user
-     * interface. */
+    /** A constant indicating a font used in a particular part of the user interface. */
     public static final int CATEGORY_FONT = 0;
 
-    /** A constant indicating a font used in a particular part of the user
-     * interface. */
+    /** A constant indicating a font used in a particular part of the user interface. */
     public static final int ITEM_FONT = 1;
 
-    /** A constant indicating a font used in a particular part of the user
-     * interface. */
+    /** A constant indicating a font used in a particular part of the user interface. */
     public static final int ICON_FONT = 2;
 
+    /** A constant indicating a font used in a particular part of the user interface. */
+    public static final int SMALL_ICON_FONT = 3;
+
+    /** A constant indicating a font used in a particular part of the user interface. */
+    public static final int DATE_FONT = 4;
+
+    /** A constant indicating a font used in a particular part of the user interface. */
+    public static final int MONTH_FONT = 5;
+
     /** Indicates the total number of font types. */
-    public static final int FONT_TYPES = 3;
+    public static final int FONT_TYPES = 6;
 
     /**
      * Initializes the configuration and creates all the necessary user
@@ -77,6 +83,15 @@ public class JikanConfig
                 break;
             case ICON_FONT:
                 data = new FontData("Helvetica", 9, SWT.NORMAL);
+                break;
+            case SMALL_ICON_FONT:
+                data = new FontData("Helvetica", 7, SWT.NORMAL);
+                break;
+            case DATE_FONT:
+                data = new FontData("Helvetica", 11, SWT.NORMAL);
+                break;
+            case MONTH_FONT:
+                data = new FontData("Helvetica", 11, SWT.ITALIC);
                 break;
             }
             _fonts[type] = new Font(_display, data);
@@ -163,7 +178,7 @@ public class JikanConfig
         _config.setValue("category", category);
     }
 
-    protected Config _config = new Config("jikan");
+    protected PrefsConfig _config = new PrefsConfig("jikan");
     protected Display _display;
     protected Font[] _fonts;
     protected Color _todayColor, _iconColor;

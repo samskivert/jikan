@@ -43,9 +43,12 @@
 
   <!-- build the java class files -->
   <target name="compile" depends="prepare">
-    <javac srcdir="${src.dir}" destdir="${deploy.dir}/classes"
-           debug="on" optimize="off" deprecation="on"
-           classpathref="clazzpath" includeAntRuntime="no"/>
+    <javac srcdir="${src.dir}" destdir="${deploy.dir}/classes" debug="on"
+           optimize="off" deprecation="on" includeAntRuntime="no">
+      <classpath refid="clazzpath"/>
+      <compilerarg value="-Xlint"/>
+      <compilerarg value="-Xlint:-serial"/>
+    </javac>
   </target>
 
   <!-- build the javadoc documentation -->
@@ -93,9 +96,6 @@
     <jar file="${web_dir}/swt-libs-linux.jar">
       <fileset dir="lib/native" includes="*.so"/>
     </jar>
-    <jar file="${web_dir}/swt-libs-macosx.jar">
-      <fileset dir="lib/native" includes="*.jnilib"/>
-    </jar>
 
     <!-- create the JNLP file -->
     <copy todir="${web_dir}">
@@ -109,6 +109,17 @@
     <signjar keystore="${sign.keystore}" alias="${sign.alias}"
       storepass="${sign.storepass}" lazy="true">
       <fileset dir="${web_dir}" includes="*.jar"/>
+    </signjar>
+  </target>
+
+  <!-- recompiles the main application installs and resigns it -->
+  <target name="quickinstall" depends="proguard">
+    <copy todir="${web_dir}">
+      <fileset dir="dist" includes="jikan-pro.jar"/>
+    </copy>
+    <signjar keystore="${sign.keystore}" alias="${sign.alias}"
+      storepass="${sign.storepass}" lazy="true">
+      <fileset dir="${web_dir}" includes="jikan-pro.jar"/>
     </signjar>
   </target>
 </project>

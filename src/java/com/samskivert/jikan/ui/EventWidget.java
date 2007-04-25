@@ -62,7 +62,8 @@ public class EventWidget
         int eidx = Jikan.store.getItemIndex(event);
         String estr = String.valueOf(eidx+1);
         int size = getIconSize();
-        gc.setFont(Jikan.config.getFont(JikanConfig.ICON_FONT));
+        int fontId = (estr.length() > 1) ? JikanConfig.SMALL_ICON_FONT : JikanConfig.ICON_FONT;
+        gc.setFont(Jikan.config.getFont(fontId));
         Point ext = gc.stringExtent(estr);
         Color obg = gc.getBackground();
         gc.setBackground(Jikan.config.getIconColor());
@@ -70,6 +71,13 @@ public class EventWidget
         gc.setBackground(obg);
         gc.drawOval(x, y, size-1, size-1);
         int dx = (size-ext.x)/2, dy = (size-ext.y)/2;
+        // yay for random font rendering wackiness!
+        if (RunAnywhere.isLinux()) {
+            dx += 1;
+            if (fontId != JikanConfig.SMALL_ICON_FONT) {
+                dy -= 1;
+            }
+        }
         gc.drawString(estr, x + dx, y + dy, true);
     }
 
