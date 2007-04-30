@@ -4,11 +4,15 @@
   <!-- read in our deployment properties -->
   <property file="deployment.properties"/>
 
+  <!-- identify the application -->
+  <property name="app.ident" value="jikan"/>
+  <property name="app.name" value="Jikan"/>
+  <property name="app.version" value="1.0"/>
+
   <!-- various basic settings -->
-  <property name="app.name" value="jikan"/>
   <property name="src.dir" value="src/java"/>
   <property name="deploy.dir" value="dist"/>
-  <property name="dist.jar" value="${app.name}.jar"/>
+  <property name="dist.jar" value="${app.ident}.jar"/>
 
   <!-- used when generating javadocs -->
   <property name="javadoc.dir"  value="${deploy.dir}/docs"/>
@@ -34,6 +38,10 @@
       <fileset dir="${src.dir}" includes="**/*.png"/>
       <fileset dir="${src.dir}" includes="**/*.properties"/>
     </copy>
+    <!-- Let everyone know if this is Darwin, so that they can do special magic -->
+    <condition property="platform.darwin">
+      <and><os family="mac"/><os family="unix"/></and>
+    </condition>
   </target>
 
   <!-- cleans out the built application -->
@@ -77,9 +85,69 @@
 
   <!-- optimizes, combines and removes dead code -->
   <target name="proguard" depends="dist">
-    <taskdef resource="proguard/ant/task.properties"
-             classpath="lib/proguard.jar"/>
-    <proguard configuration="etc/jikan.pro"/>
+    <!-- figure out where the Java rt.jar file lives -->
+    <condition property="runtime.jar" value="${java.home}/../Classes/classes.jar">
+      <istrue value="${platform.darwin}"/>
+    </condition>
+    <condition property="runtime.jar" value="${java.home}/lib/rt.jar">
+      <isfalse value="${platform.darwin}"/>
+    </condition>
+
+    <!-- run Proguard -->
+    <taskdef resource="proguard/ant/task.properties" classpath="lib/proguard.jar"/>
+    <proguard configuration="etc/jikan.pro">
+      <libraryjar name="${runtime.jar}"/>
+    </proguard>
+  </target>
+
+  <!-- creates our Mac application -->
+  <target name="macapp" depends="proguard">
+    <!-- be sure the app base directory is empty -->
+    <delete dir="${deploy.dir}/${app.name}.app"/>
+
+    <!-- create the application directory with jarbundler -->
+    <taskdef name="jarbundler" classpathref="clazzpath"
+             classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
+    <jarbundler dir="${deploy.dir}" name="${app.name}" 
+                mainclass="com.samskivert.jikan.Jikan" 
+                workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+                jars="${deploy.dir}/jikan-pro.jar lib/native/swt-macosx.jar"
+                vmoptions="-XstartOnFirstThread -Djava.library.path=."
+                version="${app.version}"
+                jvmversion="1.5+"
+                infostring="${app.name} ${app.version}"
+                icon="etc/jikan.icns"
+                stubfile="etc/JavaApplicationStub"/>
+
+    <!-- copy our native libraries into place -->
+    <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources/Java/">
+      <fileset dir="lib/native" includes="*.jnilib"/>
+    </copy>
+  </target>
+
+  <!-- creates the Mac installer image -->
+  <target name="macimg" depends="macapp">
+    <!-- Prepare for imaging -->
+    <copy file="${ds_store}" tofile="${img.dir}/.DS_Store"/>
+    <mkdir dir="${img.dir}/.background"/>
+    <copy todir="${img.dir}/.background/" file="banner.png"/>
+
+    <copy todir="${img.dir}/">
+       <fileset dir="${deploy.dir}">
+         <include name="${app.name}/**"/>
+       </fileset>
+    </copy>
+
+    <!-- Fix permissions, no matter how silly the umask made them -->
+    <exec executable="/bin/chmod">
+      <arg line="-R"/>
+      <arg line="u+w,go-w,a+r"/>
+      <arg line="'${img.dir}'"/>
+    </exec>
+    <exec executable="/bin/chmod">
+      <arg line="a+x"/>
+      <arg line="'${img.dir}/${app.name}.app/Contents/MacOS/JavaApplicationStub'"/>
+    </exec>
   </target>
 
   <!-- creates the JNLP directory, populates it -->

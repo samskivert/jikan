@@ -3,10 +3,9 @@
 #
 # Proguard configuration file for Jikan
 
--injars ../lib/samskivert.jar(!META-INF/*,!**/velocity/**,!**/xml/**)
+-injars ../lib/samskivert.jar(com/samskivert/util/**,com/samskivert/Log.class)
 -injars ../dist/jikan.jar(!META-INF/*)
 
--libraryjars <java.home>/lib/rt.jar
 -libraryjars ../lib/swt.jar
 
 -dontskipnonpubliclibraryclasses
