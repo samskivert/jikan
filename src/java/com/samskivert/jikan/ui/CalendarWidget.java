@@ -104,8 +104,7 @@ public class CalendarWidget extends Canvas
             Event event = (Event)eiter.next();
             List<Event> devents = _events.get(event.getDate());
             if (devents == null) {
-                _events.put(event.getDate(),
-                            devents = new ArrayList<Event>());
+                _events.put(event.getDate(), devents = new ArrayList<Event>());
             }
             devents.add(event);
         }
@@ -156,8 +155,8 @@ public class CalendarWidget extends Canvas
             gc.dispose();
         }
 
-        // compute our precise height for this width and force a relayout
-        // of our parent if we're not the right size
+        // compute our precise height for this width and force a relayout of our parent if we're
+        // not the right size
         int pheight = _hheight + _wcount * _csize;
         if (pheight != height) {
             _psize.x = width;
@@ -243,11 +242,15 @@ public class CalendarWidget extends Canvas
                 // draw any events on this date
                 List<Event> events = _events.get(date);
                 if (events != null) {
+                    float[][] layouts =
+                        DATE_LAYOUTS[Math.min(DATE_LAYOUTS.length, events.size())-1];
+                    int lidx = 0;
                     for (Event event : events) {
                         // TODO: properly layout multiple same day events
-                        EventWidget.paintIcon(
-                            gc, event, xx + (_csize-isize)/2,
-                            yy + (_csize-isize)/2);
+                        int ix = (int)Math.round(layouts[lidx][0] * _csize - isize/2f);
+                        int iy = (int)Math.round(layouts[lidx][1] * _csize - isize/2f);
+                        EventWidget.paintIcon(gc, event, xx + ix, yy + iy);
+                        lidx = (lidx + 1) % layouts.length;
                     }
                 }
 
@@ -261,9 +264,7 @@ public class CalendarWidget extends Canvas
 
     protected boolean isToday (Calendar cal)
     {
-        // TODO: update our notion of "today" every few minutes
-        return (_cal.get(Calendar.DAY_OF_YEAR) == _tdate &&
-                _cal.get(Calendar.YEAR) == _tyear);
+        return (_cal.get(Calendar.DAY_OF_YEAR) == _tdate && _cal.get(Calendar.YEAR) == _tyear);
     }
 
     protected void createEvent (int cx, int cy)
@@ -282,8 +283,7 @@ public class CalendarWidget extends Canvas
     protected int _tdate, _tyear;
     protected int _hheight, _csize, _wcount;
 
-    protected HashMap<Date,List<Event>> _events =
-        new HashMap<Date,List<Event>>();
+    protected HashMap<Date,List<Event>> _events = new HashMap<Date,List<Event>>();
 
     protected Point _psize = new Point(55*7, 55*6);
 
@@ -294,4 +294,11 @@ public class CalendarWidget extends Canvas
     protected static SimpleDateFormat _hfmt = new SimpleDateFormat("EEE");
     protected static SimpleDateFormat _sfmt = new SimpleDateFormat("MMM d");
     protected static SimpleDateFormat _dfmt = new SimpleDateFormat("d");
+
+    protected static final float[][][] DATE_LAYOUTS = {
+        { { 0.50f, 0.50f } },
+        { { 0.25f, 0.50f }, { 0.75f, 0.50f } },
+        { { 0.50f, 0.25f }, { 0.25f, 0.75f }, { 0.75f, 0.75f } },
+        { { 0.25f, 0.25f }, { 0.75f, 0.25f }, { 0.25f, 0.75f }, { 0.75f, 0.75f } },
+    };       
 }
