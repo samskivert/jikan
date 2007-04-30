@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
 import com.samskivert.util.PrefsConfig;
+import com.samskivert.util.RunAnywhere;
 
 /**
  * Provides access to all of the configuration information for Jikan.
@@ -75,23 +76,23 @@ public class JikanConfig
             FontData data;
             switch (type) {
             case CATEGORY_FONT:
-                data = new FontData("Helvetica", 12, SWT.BOLD);
+                data = new FontData("Helvetica", massageSize(12), SWT.BOLD);
                 break;
             default:
             case ITEM_FONT:
-                data = new FontData("Helvetica", 12, SWT.BOLD);
+                data = new FontData("Helvetica", massageSize(12), SWT.BOLD);
                 break;
             case ICON_FONT:
-                data = new FontData("Helvetica", 9, SWT.NORMAL);
+                data = new FontData("Helvetica", massageSize(9), SWT.NORMAL);
                 break;
             case SMALL_ICON_FONT:
-                data = new FontData("Helvetica", 7, SWT.NORMAL);
+                data = new FontData("Helvetica", massageSize(7), SWT.NORMAL);
                 break;
             case DATE_FONT:
-                data = new FontData("Helvetica", 11, SWT.NORMAL);
+                data = new FontData("Helvetica", massageSize(11), SWT.NORMAL);
                 break;
             case MONTH_FONT:
-                data = new FontData("Helvetica", 11, SWT.ITALIC);
+                data = new FontData("Helvetica", massageSize(11), SWT.ITALIC);
                 break;
             }
             _fonts[type] = new Font(_display, data);
@@ -176,6 +177,12 @@ public class JikanConfig
     public void setSelectedCategory (String category)
     {
         _config.setValue("category", category);
+    }
+
+    /** Yay for inconsistent font display on different platforms .*/
+    protected int massageSize (int size)
+    {
+        return RunAnywhere.isMacOS() ? Math.max(size+1, 9) : size;
     }
 
     protected PrefsConfig _config = new PrefsConfig("jikan");
