@@ -106,6 +106,7 @@
     <delete dir="${deploy.dir}/${app.name}.app"/>
 
     <!-- create the application directory with jarbundler -->
+<!-- doesn't work due to SWT startOnFirstThread bullshit
     <taskdef name="jarbundler" classpathref="clazzpath"
              classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
     <jarbundler dir="${deploy.dir}" name="${app.name}" 
@@ -118,6 +119,27 @@
                 infostring="${app.name} ${app.version}"
                 icon="etc/jikan.icns"
                 stubfile="etc/JavaApplicationStub"/>
+-->
+
+    <!-- create the application directory by hand, yay -->
+    <mkdir dir="${deploy.dir}/${app.name}.app"/>
+    <mkdir dir="${deploy.dir}/${app.name}.app/Contents"/>
+    <mkdir dir="${deploy.dir}/${app.name}.app/Contents/MacOS"/>
+    <mkdir dir="${deploy.dir}/${app.name}.app/Contents/Resources"/>
+    <mkdir dir="${deploy.dir}/${app.name}.app/Contents/Resources/Java"/>
+
+    <!-- copy our bits into place by hand, yay -->
+    <copy todir="${deploy.dir}/${app.name}.app/Contents/" file="etc/Info.plist"/>
+    <copy todir="${deploy.dir}/${app.name}.app/Contents/MacOS" file="etc/run_jikan"/>
+    <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources" file="etc/jikan.icns"/>
+    <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources/Java/">
+      <fileset dir="${deploy.dir}" includes="jikan-pro.jar"/>
+      <fileset dir="lib/native" includes="swt-macosx.jar"/>
+    </copy>
+    <exec executable="/bin/chmod">
+      <arg line="a+x"/>
+      <arg line="'${deploy.dir}/${app.name}.app/Contents/MacOS/run_jikan'"/>
+    </exec>
 
     <!-- copy our native libraries into place -->
     <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources/Java/">

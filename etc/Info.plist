@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Jikan</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleAllowMixedLocalizations</key>
+    <string>false</string>
+    <key>CFBundleGetInfoString</key>
+    <string>Jikan 1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.samskivert.jikan.Jikan</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleExecutable</key>
+    <string>run_jikan</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleIconFile</key>
+    <string>jikan.icns</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+</dict>
+</plist>
