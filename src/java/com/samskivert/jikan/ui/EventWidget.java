@@ -75,6 +75,8 @@ public class EventWidget
         if (RunAnywhere.isLinux()) {
             dx += 1;
             if (fontId != JikanConfig.SMALL_ICON_FONT) {
+                dy -= 4;
+            } else {
                 dy -= 1;
             }
         }
