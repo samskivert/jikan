@@ -18,9 +18,9 @@
 
 package com.samskivert.jikan.data;
 
-import java.util.Iterator;
-
 import com.samskivert.util.Interval;
+
+import java.util.Collection;
 
 /**
  * Defines an interface to a persistent store of item data for Jikan.
@@ -44,13 +44,13 @@ public abstract class ItemStore
     /**
      * Returns the names of all categories in this store.
      */
-    public abstract Iterator<Category> getCategories ();
+    public abstract Collection<Category> getCategories ();
 
     /**
      * Returns a list of {@link Item} instances for the specified
      * category.
      */
-    public abstract Iterator<Item> getItems (Category category);
+    public abstract Collection<Item> getItems (Category category);
 
     /**
      * Requests that a new category be created with the supplied

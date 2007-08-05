@@ -91,7 +91,7 @@ public class Jikan
         }
 
         try {
-            // create the appropriate item stoer
+            // create the appropriate item store
             store = new PropFileItemStore(ldir);
         } catch (IOException ioe) {
             log.log(Level.WARNING, "Error creating item store.", ioe);
@@ -99,7 +99,7 @@ public class Jikan
         }
 
         // make sure we have our default category
-        if (!store.getCategories().hasNext()) {
+        if (!store.getCategories().iterator().hasNext()) {
             Category cat = new Category();
             cat.init("General", "general");
             store.createCategory(cat);

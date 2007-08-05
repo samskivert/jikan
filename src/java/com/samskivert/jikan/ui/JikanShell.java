@@ -61,7 +61,7 @@ public class JikanShell
         _cal = new CalendarWidget(_shell);
         _cal.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        _elist = new EventList(_shell);
+        _elist = new EventList(_shell, MAX_DISPLAY_EVENTS);
         _elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         _cal.setEvents(_elist);
 
@@ -95,6 +95,11 @@ public class JikanShell
         bounds.height = tbounds.height;
         _shell.setBounds(bounds);
 	_shell.open();
+    }
+
+    public Shell getShell ()
+    {
+        return _shell;
     }
 
     public void run ()
@@ -135,4 +140,6 @@ public class JikanShell
     protected EventList _elist;
     protected CategoryItemList _clist;
     protected JournalItemList _jlist;
+
+    protected static final int MAX_DISPLAY_EVENTS = 10;
 }

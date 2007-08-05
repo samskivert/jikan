@@ -69,9 +69,8 @@ public class ItemList extends Composite
         }
 
         // now add new widgets for our items
-        Iterator<Item> items = Jikan.store.getItems(_category);
-        while (items.hasNext()) {
-            ItemWidget iw = new ItemWidget(this, items.next());
+        for (Item item : Jikan.store.getItems(_category)) {
+            ItemWidget iw = new ItemWidget(this, item);
             iw.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         }
 

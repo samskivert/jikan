@@ -154,7 +154,7 @@ public class CategoryItemList extends ItemList
     protected static ArrayList<Category> getCategories ()
     {
         ArrayList<Category> cats = new ArrayList<Category>();
-        CollectionUtil.addAll(cats, Jikan.store.getCategories());
+        CollectionUtil.addAll(cats, Jikan.store.getCategories().iterator());
         for (Iterator<Category> iter = cats.iterator(); iter.hasNext(); ) {
             Category cat = iter.next();
             if (cat.equals(Category.EVENTS) || cat instanceof JournalCategory) {

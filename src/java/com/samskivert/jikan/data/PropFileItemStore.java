@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,13 +82,13 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
-    public Iterator<Category> getCategories ()
+    public Collection<Category> getCategories ()
     {
-        return _cats.keySet().iterator();
+        return _cats.keySet();
     }
 
     @Override // documentation inherited
-    public Iterator<Item> getItems (Category category)
+    public Collection<Item> getItems (Category category)
     {
         ArrayList<Item> items = _cats.get(category);
         // journal categories are loaded on demand
@@ -95,7 +96,7 @@ public class PropFileItemStore extends ItemStore
             loadJournalCategory(category);
             items = _cats.get(category);
         }
-        return (items == null) ? null : items.iterator();
+        return items;
     }
 
     @Override // documentation inherited

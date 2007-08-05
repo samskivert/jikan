@@ -99,9 +99,8 @@ public class CalendarWidget extends Canvas
     public void refresh ()
     {
         _events.clear();
-        Iterator<Item> eiter = Jikan.store.getItems(Category.EVENTS);
-        while (eiter.hasNext()) {
-            Event event = (Event)eiter.next();
+        for (Item item : Jikan.store.getItems(Category.EVENTS)) {
+            Event event = (Event)item;
             List<Event> devents = _events.get(event.getDate());
             if (devents == null) {
                 _events.put(event.getDate(), devents = new ArrayList<Event>());
