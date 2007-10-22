@@ -246,8 +246,8 @@ public class CalendarWidget extends Canvas
                     int lidx = 0;
                     for (Event event : events) {
                         // TODO: properly layout multiple same day events
-                        int ix = (int)Math.round(layouts[lidx][0] * _csize - isize/2f);
-                        int iy = (int)Math.round(layouts[lidx][1] * _csize - isize/2f);
+                        int ix = Math.round(layouts[lidx][0] * _csize - isize/2f);
+                        int iy = Math.round(layouts[lidx][1] * _csize - isize/2f);
                         EventWidget.paintIcon(gc, event, xx + ix, yy + iy);
                         lidx = (lidx + 1) % layouts.length;
                     }
