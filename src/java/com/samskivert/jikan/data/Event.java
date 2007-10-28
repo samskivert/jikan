@@ -18,6 +18,7 @@
 
 package com.samskivert.jikan.data;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
@@ -43,7 +44,16 @@ public class Event extends Item
         super(Category.EVENTS, props, index);
         String key = "item" + index;
         _allday = "true".equals(props.getProperty(key + ".allday"));
-        _when = new Date(PropUtil.getLongProperty(props, key + ".when"));
+        String when = props.getProperty(key + ".when", "");
+        try {
+            if (when.matches("\\d+")) {
+                _when = new Date(Long.parseLong(when));
+            } else {
+                _when = _dfmt.parse(when);
+            }
+        } catch (Exception e) {
+            _when = new Date();
+        }
         _duration = PropUtil.getIntProperty(props, key + ".duration");
         _date = normalize(_when);
     }
@@ -131,7 +141,7 @@ public class Event extends Item
         super.store(props, index);
         String key = "item" + index;
         props.setProperty(key + ".allday", String.valueOf(_allday));
-        props.setProperty(key + ".when", String.valueOf(_when.getTime()));
+        props.setProperty(key + ".when", _dfmt.format(_when));
         props.setProperty(key + ".duration", String.valueOf(_duration));
     }
 
@@ -152,4 +162,5 @@ public class Event extends Item
     protected Color _color;
 
     protected static Calendar _cal = Calendar.getInstance();
+    protected static SimpleDateFormat _dfmt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss aa zzz");
 }
