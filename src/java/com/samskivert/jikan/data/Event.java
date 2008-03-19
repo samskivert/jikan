@@ -162,5 +162,5 @@ public class Event extends Item
     protected Color _color;
 
     protected static Calendar _cal = Calendar.getInstance();
-    protected static SimpleDateFormat _dfmt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss aa zzz");
+    protected static SimpleDateFormat _dfmt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss aa");
 }
