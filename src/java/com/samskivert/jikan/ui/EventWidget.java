@@ -74,11 +74,6 @@ public class EventWidget
         // yay for random font rendering wackiness!
         if (RunAnywhere.isLinux()) {
             dx += 1;
-            if (fontId != JikanConfig.SMALL_ICON_FONT) {
-                dy -= 4;
-            } else {
-                dy -= 1;
-            }
         }
         gc.drawString(estr, x + dx, y + dy, true);
     }
