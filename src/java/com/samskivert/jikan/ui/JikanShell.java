@@ -65,8 +65,8 @@ public class JikanShell
         _elist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         _cal.setEvents(_elist);
 
-        _clist = new CategoryItemList(_shell);
-        _clist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+//         _clist = new CategoryItemList(_shell);
+//         _clist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         _jlist = new JournalItemList(_shell);
         _jlist.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -117,8 +117,8 @@ public class JikanShell
         Refreshable[] list = null;
         if (category instanceof JournalCategory) {
             list = new Refreshable[] { _jlist };
-        } else if (category.equals(_clist.getCategory())) {
-            list = new Refreshable[] { _clist };
+//         } else if (category.equals(_clist.getCategory())) {
+//             list = new Refreshable[] { _clist };
         } else if (category.equals(Category.EVENTS)) {
             list = new Refreshable[] { _cal, _elist };
         }
@@ -138,7 +138,7 @@ public class JikanShell
     protected Shell _shell;
     protected CalendarWidget _cal;
     protected EventList _elist;
-    protected CategoryItemList _clist;
+//     protected CategoryItemList _clist;
     protected JournalItemList _jlist;
 
     protected static final int MAX_DISPLAY_EVENTS = 10;
