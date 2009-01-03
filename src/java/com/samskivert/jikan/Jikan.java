@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,6 +83,8 @@ public class Jikan
     {
 	Display display = new Display();
         config = new JikanConfig(display);
+
+        log.info("Jikan running at " + new Date());
 
         File ldir = new File(localDataDir());
         if (!ldir.exists()) {
