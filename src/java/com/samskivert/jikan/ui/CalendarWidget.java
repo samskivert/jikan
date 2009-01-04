@@ -124,9 +124,8 @@ public class CalendarWidget extends Canvas
         _sweek = _cal.get(Calendar.WEEK_OF_YEAR);
         _syear = _cal.get(Calendar.YEAR);
 
-        // if the very last day of the year falls on a Sunday, something funny happens with the
-        // date math, so we work around it here
-        if (_cal.get(Calendar.DAY_OF_YEAR) == 365 && _sweek == 1) {
+        // java.util.Calendar has some bugs with WEEK_OF_YEAR; so we have to do this hackery
+        if (_cal.get(Calendar.DAY_OF_YEAR) > 348 && _sweek == 1) {
             _sweek = 53;
         }
 
