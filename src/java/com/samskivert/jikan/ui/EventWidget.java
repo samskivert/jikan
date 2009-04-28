@@ -54,7 +54,7 @@ public class EventWidget
     public static int getIconSize ()
     {
         Font font = Jikan.config.getFont(JikanConfig.ICON_FONT);
-        return font.getFontData()[0].height + 5;
+        return font.getFontData()[0].getHeight() + 5;
     }
 
     public static void paintIcon (GC gc, Event event, int x, int y)
