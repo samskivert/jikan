@@ -14,7 +14,7 @@ my $verbose;
 GetOptions("verbose" => \$verbose);
 die $usage if (@ARGV == 0);
 
-my $jargs = "-Djava.library.path=$root/lib/native";
+my $jargs = "";
 if (`uname` =~ /Darwin/) {
     $jargs .= " -XstartOnFirstThread";
 }
