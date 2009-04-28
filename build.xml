@@ -179,14 +179,6 @@
       <fileset dir="lib/native" includes="*.jar"/>
     </copy>
 
-    <!-- create the platform jar files -->
-    <jar file="${web_dir}/swt-libs-windows.jar">
-      <fileset dir="lib/native" includes="*.dll"/>
-    </jar>
-    <jar file="${web_dir}/swt-libs-linux.jar">
-      <fileset dir="lib/native" includes="*.so"/>
-    </jar>
-
     <!-- create the JNLP file -->
     <copy todir="${web_dir}">
       <fileset dir="etc" includes="jikan.jnlp"/>

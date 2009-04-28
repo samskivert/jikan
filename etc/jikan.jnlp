@@ -22,14 +22,10 @@
     <jar href="jikan-pro.jar"/>
   </resources>
   <resources os="Windows">
-    <nativelib href="swt-libs-windows.jar"/>
     <jar href="swt-windows.jar"/>
-    <property name="java.library.path" value="." />
   </resources>
   <resources os="Linux" arch="i386">
-    <nativelib href="swt-libs-linux.jar"/>
     <jar href="swt-linux.jar"/>
-    <property name="java.library.path" value="." />
   </resources> 
   <application-desc main-class="com.samskivert.jikan.Jikan"/>
 </jnlp>
