@@ -50,7 +50,7 @@ public class Item
     {
         if (!text.equals(_text)) {
             _text = text;
-            notifyModified();
+            notifyUpdated();
         }
     }
 
@@ -66,15 +66,15 @@ public class Item
         return _text.compareTo(other._text);
     }
 
-    protected void setStore (ItemStore store)
+    protected void setJournal (ItemJournal journal)
     {
-        _store = store;
+        _journal = journal;
     }
 
-    protected void notifyModified ()
+    protected void notifyUpdated ()
     {
-        if (_store != null) {
-            _store.itemModified(this);
+        if (_journal != null) {
+            _journal.itemUpdated(this);
         }
     }
 
@@ -84,5 +84,5 @@ public class Item
     }
 
     protected String _text;
-    protected ItemStore _store;
+    protected ItemJournal _journal;
 }

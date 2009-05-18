@@ -92,7 +92,7 @@ public class Event extends Item
             _when = when;
             _date = normalize(_when);
             _allday = allday;
-            notifyModified();
+            notifyUpdated();
         }
     }
 

@@ -26,6 +26,7 @@ import java.util.Collection;
  * Defines an interface to a persistent store of item data for Jikan.
  */
 public abstract class ItemStore
+    implements ItemJournal.Listener
 {
     /** An interface used to inform users of a store when a category has been updated
      * asynchronously. See {@link #setStoreListener}. */
@@ -56,36 +57,9 @@ public abstract class ItemStore
     public abstract void createCategory (Category category);
 
     /**
-     * Adds the supplied item to the appropriate category. The repository should automatically
-     * queue up a flush.
-     */
-    public abstract void addItem (Item item);
-
-    /**
-     * Removes the specified item from the appropriate category. The repository should
-     * automatically queue up a flush.
-     */
-    public abstract void deleteItem (Item item);
-
-    /**
      * Returns this item's index in its category list.
      */
     public abstract int getItemIndex (Item item);
-
-    /**
-     * Called by an item when it is modified. The repository will mark the appropriate category as
-     * modified and queue up a flush.
-     */
-    public void itemModified (Item item)
-    {
-        categoryModified(item.category);
-    }
-
-    /**
-     * Called when a category is modified (meaning its name was changed).  The repository should
-     * mark the category as modified and queue up a flush.
-     */
-    public abstract void categoryModified (Category cat);
 
     /**
      * Writes all modified categories to the persistent store.  <em>Note:</em> this may run
@@ -133,6 +107,62 @@ public abstract class ItemStore
         _listener = listener;
     }
 
+    // from interface ItemJournal
+    public String getId ()
+    {
+        return "itemstore";
+    }
+
+    // from interface ItemJournal
+    public void onEvent (ItemJournal.Event event)
+    {
+        switch (event.type) {
+        case ADD:
+            addItem(event.item);
+            break;
+        case UPDATE:
+            itemModified(event.item);
+            break;
+        case DELETE:
+            deleteItem(event.item);
+            break;
+        }
+        _journal.confirmEvent(event.id, this);
+    }
+
+    protected ItemStore (ItemJournal journal)
+    {
+        _journal = journal;
+        _journal.addListener(this);
+    }
+
+    /**
+     * Adds the supplied item to the appropriate category. The repository should automatically
+     * queue up a flush.
+     */
+    protected abstract void addItem (Item item);
+
+    /**
+     * Called by an item when it is modified. The repository will mark the appropriate category as
+     * modified and queue up a flush.
+     */
+    protected void itemModified (Item item)
+    {
+        categoryModified(item.category);
+    }
+
+    /**
+     * Called when a category is modified (meaning its name was changed).  The repository should
+     * mark the category as modified and queue up a flush.
+     */
+    protected abstract void categoryModified (Category cat);
+
+    /**
+     * Removes the specified item from the appropriate category. The repository should
+     * automatically queue up a flush.
+     */
+    protected abstract void deleteItem (Item item);
+
     /**
      * Notifies any registered listener that the specified category has been updated.
      */
@@ -143,6 +173,7 @@ public abstract class ItemStore
         }
     }
 
+    protected ItemJournal _journal;
     protected StoreListener _listener;
     protected Interval _flusher;
 }

@@ -47,9 +47,10 @@ import static com.samskivert.jikan.Jikan.log;
  */
 public class PropFileItemStore extends ItemStore
 {
-    public PropFileItemStore (File propdir)
+    public PropFileItemStore (ItemJournal journal, File propdir)
         throws IOException
     {
+        super(journal);
         _propdir = propdir;
 
         // scan the directory for all .properties files and load them up
@@ -118,35 +119,6 @@ public class PropFileItemStore extends ItemStore
     }
 
     @Override // documentation inherited
-    public synchronized void addItem (Item item)
-    {
-        List<Item> items = _cats.get(item.category);
-        if (items == null) {
-            log.warning("Requested to add item to non-existent category", "item", item);
-            return;
-        }
-        items.add(item);
-        item.setStore(this);
-        categoryModified(item.category);
-    }
-
-    @Override // documentation inherited
-    public synchronized void deleteItem (Item item)
-    {
-        List<Item> items = _cats.get(item.category);
-        if (items == null) {
-            log.warning("Requested to delete item in non-existent category", "item", item);
-            return;
-        }
-        if (items.remove(item)) {
-            _modified.add(item.category);
-            queueFlush();
-        } else {
-            log.warning("Requested to delete unknown item", "item", item);
-        }
-    }
-
-    @Override // documentation inherited
     public int getItemIndex (Item item)
     {
         List<Item> items = _cats.get(item.category);
@@ -155,17 +127,6 @@ public class PropFileItemStore extends ItemStore
             return -1;
         }
         return items.indexOf(item);
-    }
-
-    @Override // documentation inherited
-    public void categoryModified (Category cat)
-    {
-        // the events category must be resorted when modified
-        if (cat.equals(Category.EVENTS)) {
-            Collections.sort(_cats.get(cat));
-        }
-        _modified.add(cat);
-        queueFlush();
     }
 
     @Override // documentation inherited
@@ -235,7 +196,7 @@ public class PropFileItemStore extends ItemStore
             } else {
                 items.add(item = new Item(category, props, ii));
             }
-            item.setStore(this);
+            item.setJournal(_journal);
         }
 
         if (category.equals(Category.EVENTS)) {
@@ -289,6 +250,46 @@ public class PropFileItemStore extends ItemStore
                 log.warning("Failed reloading category '" + catinfo.source + "'.", ioe);
             }
         }
+    }
+
+    @Override // from ItemStore
+    protected synchronized void addItem (Item item)
+    {
+        List<Item> items = _cats.get(item.category);
+        if (items == null) {
+            log.warning("Requested to add item to non-existent category", "item", item);
+            return;
+        }
+        items.add(item);
+        item.setJournal(_journal);
+        categoryModified(item.category);
+    }
+
+    @Override // from ItemStore
+    protected synchronized void deleteItem (Item item)
+    {
+        List<Item> items = _cats.get(item.category);
+        if (items == null) {
+            log.warning("Requested to delete item in non-existent category", "item", item);
+            return;
+        }
+        if (items.remove(item)) {
+            _modified.add(item.category);
+            queueFlush();
+        } else {
+            log.warning("Requested to delete unknown item", "item", item);
+        }
+    }
+
+    @Override // from ItemStore
+    protected void categoryModified (Category cat)
+    {
+        // the events category must be resorted when modified
+        if (cat.equals(Category.EVENTS)) {
+            Collections.sort(_cats.get(cat));
+        }
+        _modified.add(cat);
+        queueFlush();
     }
 
     protected static class CategoryInfo

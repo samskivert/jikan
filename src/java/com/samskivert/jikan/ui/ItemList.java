@@ -33,8 +33,8 @@ import com.samskivert.jikan.data.Item;
 import static com.samskivert.jikan.Jikan.log;
 
 /**
- * Displays a list of items and provides the ability to edit those items
- * inline and add new items to the list.
+ * Displays a list of items and provides the ability to edit those items inline and add new items
+ * to the list.
  */
 public class ItemList extends Composite
     implements JikanShell.Refreshable
@@ -92,13 +92,12 @@ public class ItemList extends Composite
     }
 
     /**
-     * Called when the blank item we added to the end of our list is
-     * filled in.
+     * Called when the blank item we added to the end of our list is filled in.
      */
     protected Item createItem ()
     {
         Item item = new Item(_category, "");
-        Jikan.store.addItem(item);
+        Jikan.journal.itemAdded(item);
         addBlankItem();
         return item;
     }
@@ -110,7 +109,7 @@ public class ItemList extends Composite
     {
         Item item = widget.getItem();
         if (item != null) {
-            Jikan.store.deleteItem(item);
+            Jikan.journal.itemDeleted(item);
         } else {
             log.warning("Requested to delete item widget with no item.");
         }

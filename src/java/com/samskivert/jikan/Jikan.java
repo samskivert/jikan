@@ -31,6 +31,7 @@ import com.samskivert.util.Logger;
 import com.samskivert.util.StringUtil;
 
 import com.samskivert.jikan.data.Category;
+import com.samskivert.jikan.data.ItemJournal;
 import com.samskivert.jikan.data.ItemStore;
 import com.samskivert.jikan.data.PropFileItemStore;
 import com.samskivert.jikan.ui.JikanShell;
@@ -54,6 +55,9 @@ public class Jikan
 
     /** Manages our user interface. */
     public static JikanShell shell;
+
+    /** Coordinates the modification of items. */
+    public static ItemJournal journal;
 
     /** Provides access to our items. */
     public static ItemStore store;
@@ -93,11 +97,16 @@ public class Jikan
         }
 
         try {
-            // create the appropriate item store
-            store = new PropFileItemStore(ldir);
+            // create our journal, item store and syncers
+            journal = new ItemJournal();
+            store = new PropFileItemStore(journal, ldir);
+            // TODO: new GCalSyncer(username, password);
+            // now initialize our journal and process pending events
+            journal.init(ldir);
         } catch (IOException ioe) {
-            log.warning("Error creating item store.", ioe);
+            log.warning("Error initializing.", ioe);
             // TODO: report the error
+            System.exit(255);
         }
 
         // make sure we have our default category
