@@ -4,6 +4,7 @@
 # Proguard configuration file for Jikan
 
 -injars ../lib/samskivert.jar(com/samskivert/util/**,com/samskivert/Log.class)
+-injars ../lib/google-collect.jar(!META-INF/*)
 -injars ../dist/jikan.jar(!META-INF/*)
 
 -libraryjars ../lib/swt.jar
