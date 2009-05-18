@@ -63,9 +63,8 @@ public class NewCategoryDialog
                 if (StringUtil.isBlank(name)) {
                     return;
                 }
-                Category cat = new Category();
                 String file = name.toLowerCase().replace("\\s", "_");
-                cat.init(name, file);
+                Category cat = new Category(name, file);
                 Jikan.store.createCategory(cat);
                 _list.selectCategory(cat);
                 _shell.dispose();

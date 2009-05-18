@@ -120,7 +120,7 @@ public class EventWidget
                         setText(ntext);
                     }
                     // force the event list and calendar to refresh
-                    Jikan.shell.categoryUpdated(_event.getCategory());
+                    Jikan.shell.categoryUpdated(_event.category);
                 } else {
                     // TODO: report an error
                     startEdit();

@@ -78,7 +78,7 @@ public abstract class ItemStore
      */
     public void itemModified (Item item)
     {
-        categoryModified(item.getCategory());
+        categoryModified(item.category);
     }
 
     /**

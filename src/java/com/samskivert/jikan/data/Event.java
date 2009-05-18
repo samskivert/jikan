@@ -111,10 +111,11 @@ public class Event extends Item
         return _when.compareTo(((Event)other)._when);
     }
 
+    @Override // from Object
     public String toString ()
     {
-        return "[cat=" + _category.getName() + ", when=" + _when +
-            ", allday=" + _allday + ", text=" + _text + "]";
+        return "[cat=" + this.category.name + ", when=" + _when + ", allday=" + _allday +
+            ", text=" + _text + "]";
     }
 
     protected void store (Properties props, int index)

@@ -25,58 +25,41 @@ public class Category
     implements Comparable<Category>
 {
     /** A special category for events. */
-    public static final Category EVENTS = new Category();
+    public static final Category EVENTS = new Category("__EVENTS__", "events");
 
-    /**
-     * Initializes a category instance with the supplied name and file.
-     */
-    public void init (String name, String file)
+    /** This category's human readable name. */
+    public final String name;
+
+    /** The name of the file in which this category stores data. */
+    public final String file;
+
+    public Category (String name, String file)
     {
-        _name = name;
-        _file = file;
+        this.name = name;
+        this.file = file;
     }
 
-    public String getName ()
-    {
-        return _name;
-    }
-
-    public void setName (String name)
-    {
-        _name = name;
-    }
-
-    public String getFile ()
-    {
-        return _file;
-    }
-
-    @Override // documentation inherited
-    public int hashCode ()
-    {
-        return _file.hashCode();
-    }
-
-    @Override // documentation inherited
-    public boolean equals (Object other)
-    {
-        return _file.equals(((Category)other)._file);
-    }
-
-    // documentation inherited from interface Comparable
+    // from interface Comparable<Category>
     public int compareTo (Category other)
     {
-        return _name.compareTo(other._name);
+        return this.name.compareTo(other.name);
     }
 
+    @Override // from Object
+    public int hashCode ()
+    {
+        return this.file.hashCode();
+    }
+
+    @Override // from Object
+    public boolean equals (Object other)
+    {
+        return this.file.equals(((Category)other).file);
+    }
+
+    @Override // from Object
     public String toString ()
     {
-        return _name + " (" + _file + ")";
-    }
-
-    protected String _name, _file;
-
-    static {
-        EVENTS.init("__EVENTS__", "events");
+        return this.name + " (" + this.file + ")";
     }
 }

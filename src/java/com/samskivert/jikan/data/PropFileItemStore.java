@@ -57,14 +57,13 @@ public class PropFileItemStore extends ItemStore
         for (int ii = 0; ii < files.length; ii++) {
             if (files[ii].endsWith(".properties")) {
                 File propfile = new File(propdir, files[ii]);
-                loadCategory(files[ii], propfile, new Category());
+                loadCategory(files[ii], propfile, new Category(null, null));
             }
         }
 
         // if we have no categories at all (we're just starting up), create a general category
         if (_cats.size() == 0) {
-            Category general = new Category();
-            general.init("General", "general");
+            Category general = new Category("General", "general");
             createCategory(general);
         }
 
@@ -108,11 +107,11 @@ public class PropFileItemStore extends ItemStore
             return;
         }
 
-        File catfile = new File(_propdir, category.getFile() + ".properties");
+        File catfile = new File(_propdir, category.file + ".properties");
         List<Item> items = Lists.newArrayList();
         synchronized (this) {
             _cats.put(category, items);
-            _catinfo.put(category, new CategoryInfo(category, category.getFile(), catfile));
+            _catinfo.put(category, new CategoryInfo(category, category.file, catfile));
         }
 
         categoryModified(category);
@@ -121,27 +120,26 @@ public class PropFileItemStore extends ItemStore
     @Override // documentation inherited
     public synchronized void addItem (Item item)
     {
-        Category category = item.getCategory();
-        List<Item> items = _cats.get(category);
+        List<Item> items = _cats.get(item.category);
         if (items == null) {
             log.warning("Requested to add item to non-existent category", "item", item);
             return;
         }
         items.add(item);
         item.setStore(this);
-        categoryModified(category);
+        categoryModified(item.category);
     }
 
     @Override // documentation inherited
     public synchronized void deleteItem (Item item)
     {
-        List<Item> items = _cats.get(item.getCategory());
+        List<Item> items = _cats.get(item.category);
         if (items == null) {
             log.warning("Requested to delete item in non-existent category", "item", item);
             return;
         }
         if (items.remove(item)) {
-            _modified.add(item.getCategory());
+            _modified.add(item.category);
             queueFlush();
         } else {
             log.warning("Requested to delete unknown item", "item", item);
@@ -151,7 +149,7 @@ public class PropFileItemStore extends ItemStore
     @Override // documentation inherited
     public int getItemIndex (Item item)
     {
-        List<Item> items = _cats.get(item.getCategory());
+        List<Item> items = _cats.get(item.category);
         if (items == null) {
             log.warning("Requested index of item in non-existent category", "item", item);
             return -1;
@@ -194,7 +192,7 @@ public class PropFileItemStore extends ItemStore
         List<Tuple<Category,Properties>> flats = Lists.newArrayList();
         for (Category category : _modified) {
             Properties props = new Properties();
-            props.setProperty("category", category.getName());
+            props.setProperty("category", category.name);
             props.setProperty("items", "" + _cats.get(category).size());
             int idx = 0;
             for (Item item : _cats.get(category)) {
@@ -217,7 +215,7 @@ public class PropFileItemStore extends ItemStore
             // no problem; just proceed with an empty properties file
         }
 
-        String catname = props.getProperty("category", category.getName());
+        String catname = props.getProperty("category", category.name);
         if (catname == null) {
             log.warning("Property file missing category", "file", propfile);
             return null;
@@ -227,7 +225,7 @@ public class PropFileItemStore extends ItemStore
         if (sufidx != -1) {
             fname = fname.substring(0, sufidx);
         }
-        category.init(catname, fname);
+        category = new Category(catname, fname);
         List<Item> items = Lists.newArrayList();
         int icount = PropUtil.getIntProperty(props, "items");
         for (int ii = 0; ii < icount; ii++) {
@@ -256,7 +254,7 @@ public class PropFileItemStore extends ItemStore
     protected void loadJournalCategory (Category category)
     {
         // make sure the year directory exists
-        File propfile = new File(_propdir, category.getFile() + ".properties");
+        File propfile = new File(_propdir, category.file + ".properties");
         File parent = propfile.getParentFile();
         if (!parent.exists()) {
             if (!parent.mkdir()) {
@@ -265,7 +263,7 @@ public class PropFileItemStore extends ItemStore
         }
 
         try {
-            loadCategory(category.getFile(), propfile, category);
+            loadCategory(category.file, propfile, category);
         } catch (IOException ioe) {
             log.warning("Failed to load journal category", "file", propfile, ioe);
         }

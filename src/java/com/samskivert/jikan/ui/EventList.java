@@ -65,7 +65,7 @@ public class EventList extends Composite
     {
         _nevent = new Event("<new>", true, when, 0);
         Jikan.store.addItem(_nevent);
-        Jikan.shell.categoryUpdated(_nevent.getCategory());
+        Jikan.shell.categoryUpdated(_nevent.category);
     }
 
     /**
@@ -76,7 +76,7 @@ public class EventList extends Composite
         Event event = widget.getEvent();
         if (event != null) {
             Jikan.store.deleteItem(event);
-            Jikan.shell.categoryUpdated(event.getCategory());
+            Jikan.shell.categoryUpdated(event.category);
         } else {
             log.warning("Requested to delete event widget with no event.");
         }

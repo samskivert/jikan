@@ -66,7 +66,7 @@ public class CategoryItemList extends ItemList
         _category = cats.get(0);
         String selection = Jikan.config.getSelectedCategory();
         for (Category cat : cats) {
-            if (cat.getName().equals(selection)) {
+            if (cat.name.equals(selection)) {
                 _category = cat;
                 break;
             }
@@ -74,7 +74,7 @@ public class CategoryItemList extends ItemList
 
         _title = new Label(_header, 0);
         _title.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
-        _title.setText(_category.getName());
+        _title.setText(_category.name);
         _title.addMouseListener(new MouseAdapter() {
             public void mouseDown (MouseEvent e) {
                 if (e.button == 1) {
@@ -109,7 +109,7 @@ public class CategoryItemList extends ItemList
         for (int ii = 0; ii < _cats.length; ii++) {
             MenuItem item = new MenuItem(popup, SWT.PUSH);
             Category cat = _cats[ii];
-            item.setText(cat.getName());
+            item.setText(cat.name);
             final Category fcat = cat;
             item.addSelectionListener(new SelectionAdapter() {
                 public void widgetSelected (SelectionEvent event) {
@@ -141,9 +141,9 @@ public class CategoryItemList extends ItemList
     protected void selectCategory (Category cat)
     {
         _category = cat;
-        _title.setText(cat.getName());
+        _title.setText(cat.name);
         _header.layout();
-        Jikan.config.setSelectedCategory(cat.getName());
+        Jikan.config.setSelectedCategory(cat.name);
         refresh();
     }
 

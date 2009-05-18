@@ -87,7 +87,7 @@ public class ItemList extends Composite
         // add the title
         Label label = new Label(this, 0);
         label.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
-        label.setText(_category.getName());
+        label.setText(_category.name);
         label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     }
 

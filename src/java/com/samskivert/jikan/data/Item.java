@@ -26,21 +26,19 @@ import java.util.Properties;
 public class Item
     implements Comparable<Item>
 {
+    /** The category to which this item belongs. */
+    public final Category category;
+
     public Item (Category category, String text)
     {
-        _category = category;
+        this.category = category;
         _text = text;
     }
 
     public Item (Category category, Properties props, int index)
     {
-        _category = category;
+        this.category = category;
         _text = props.getProperty("item" + index);
-    }
-
-    public Category getCategory ()
-    {
-        return _category;
     }
 
     public String getText ()
@@ -58,7 +56,7 @@ public class Item
 
     public String toString ()
     {
-        return "[cat=" + _category.getName() + ", text=" + _text + "]";
+        return "[cat=" + this.category.name + ", text=" + _text + "]";
     }
 
     // from interface Comparable<Item>
@@ -85,7 +83,6 @@ public class Item
         props.setProperty("item" + index, _text);
     }
 
-    protected Category _category;
     protected String _text;
     protected ItemStore _store;
 }

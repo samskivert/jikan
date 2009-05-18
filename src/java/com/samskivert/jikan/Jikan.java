@@ -102,8 +102,7 @@ public class Jikan
 
         // make sure we have our default category
         if (!store.getCategories().iterator().hasNext()) {
-            Category cat = new Category();
-            cat.init("General", "general");
+            Category cat = new Category("General", "general");
             store.createCategory(cat);
         }
 

@@ -84,7 +84,7 @@ public class JournalItemList extends ItemList
 
         _title = new Label(_header, 0);
         _title.setFont(Jikan.config.getFont(Jikan.config.CATEGORY_FONT));
-        _title.setText(_category.getName());
+        _title.setText(_category.name);
 
         Composite spacer = new Composite(_header, 0);
         GridData gd = new GridData();
@@ -111,7 +111,7 @@ public class JournalItemList extends ItemList
     {
         _when.setTime(when);
         _category = new JournalCategory(when);
-        _title.setText(_category.getName());
+        _title.setText(_category.name);
         _header.layout();
         refresh();
     }

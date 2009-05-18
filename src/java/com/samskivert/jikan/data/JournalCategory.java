@@ -32,7 +32,7 @@ public class JournalCategory extends Category
      */
     public JournalCategory (Date when)
     {
-        init(_nfmt.format(when), _ffmt.format(when));
+        super(_nfmt.format(when), _ffmt.format(when));
     }
 
     protected static DateFormat _nfmt = DateFormat.getDateInstance(DateFormat.FULL);
