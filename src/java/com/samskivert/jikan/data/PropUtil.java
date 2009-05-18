@@ -19,7 +19,6 @@
 package com.samskivert.jikan.data;
 
 import java.util.Properties;
-import java.util.logging.Level;
 
 import static com.samskivert.jikan.Jikan.log;
 
@@ -33,7 +32,7 @@ public class PropUtil
         try {
             return Integer.parseInt(props.getProperty(key, "0"));
         } catch (Exception e) {
-            log.log(Level.WARNING, "Unable to read int '" + key + "'.", e);
+            log.warning("Unable to read int '" + key + "'.", e);
             return 0;
         }
     }
@@ -43,7 +42,7 @@ public class PropUtil
         try {
             return Long.parseLong(props.getProperty(key, "0"));
         } catch (Exception e) {
-            log.log(Level.WARNING, "Unable to read long '" + key + "'.", e);
+            log.warning("Unable to read long '" + key + "'.", e);
             return 0L;
         }
     }

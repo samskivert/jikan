@@ -23,12 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.eclipse.swt.widgets.Display;
 
 import com.samskivert.util.Interval;
+import com.samskivert.util.Logger;
 import com.samskivert.util.StringUtil;
 
 import com.samskivert.jikan.data.Category;
@@ -97,7 +96,7 @@ public class Jikan
             // create the appropriate item store
             store = new PropFileItemStore(ldir);
         } catch (IOException ioe) {
-            log.log(Level.WARNING, "Error creating item store.", ioe);
+            log.warning("Error creating item store.", ioe);
             // TODO: report the error
         }
 

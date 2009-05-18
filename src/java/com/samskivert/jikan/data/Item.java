@@ -61,7 +61,7 @@ public class Item
         return "[cat=" + _category.getName() + ", text=" + _text + "]";
     }
 
-    // documentation inherited from interface Comparable
+    // from interface Comparable<Item>
     public int compareTo (Item other)
     {
         // some day we'll add a total ordering

@@ -67,9 +67,8 @@ public class Event extends Item
     }
 
     /**
-     * Returns the date on which this event starts (the time components of
-     * the returned date will be normalized to zero milliseconds after
-     * midnight).
+     * Returns the date on which this event starts (the time components of the returned date will
+     * be normalized to zero milliseconds after midnight).
      */
     public Date getDate ()
     {
@@ -98,33 +97,15 @@ public class Event extends Item
     }
 
     /**
-     * Returns the duration of this event which will be in minutes if the
-     * event has a date and time, days if the event has only a date (it's
-     * an "all day" event.
+     * Returns the duration of this event which will be in minutes if the event has a date and
+     * time, days if the event has only a date (it's an "all day" event.
      */
     public int getDuration ()
     {
         return _duration;
     }
 
-    /**
-     * Assigns a color to this event.
-     */
-    public void setColor (Color color)
-    {
-        _color = color;
-    }
-
-    /**
-     * Returns the color assigned to this event for use when displaying it
-     * on the calendar widget.
-     */
-    public Color getColor ()
-    {
-        return _color;
-    }
-
-    // documentation inherited from interface Comparable
+    // from interface Comparable<Item>
     public int compareTo (Item other)
     {
         return _when.compareTo(((Event)other)._when);
@@ -159,7 +140,6 @@ public class Event extends Item
     protected Date _when;
     protected int _duration;
     protected boolean _allday;
-    protected Color _color;
 
     protected static Calendar _cal = Calendar.getInstance();
     protected static SimpleDateFormat _dfmt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss aa");
