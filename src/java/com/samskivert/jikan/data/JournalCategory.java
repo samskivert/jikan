@@ -35,8 +35,6 @@ public class JournalCategory extends Category
         init(_nfmt.format(when), _ffmt.format(when));
     }
 
-    protected static DateFormat _nfmt =
-        DateFormat.getDateInstance(DateFormat.FULL);
-    protected static SimpleDateFormat _ffmt =
-        new SimpleDateFormat("yyyy/MM-dd");
+    protected static DateFormat _nfmt = DateFormat.getDateInstance(DateFormat.FULL);
+    protected static SimpleDateFormat _ffmt = new SimpleDateFormat("yyyy/MM-dd");
 }

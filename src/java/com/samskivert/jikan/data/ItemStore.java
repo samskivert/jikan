@@ -27,16 +27,15 @@ import java.util.Collection;
  */
 public abstract class ItemStore
 {
-    /** An interface used to inform users of a store when a category has
-     * been updated asynchronously. See {@link #setStoreListener}. */
+    /** An interface used to inform users of a store when a category has been updated
+     * asynchronously. See {@link #setStoreListener}. */
     public interface StoreListener
     {
         /**
-         * Called when a category has been changed by an external
-         * process. Note that this method will be called on a timer thread
-         * and because access to the store is not thread safe, this
-         * callback should simply notify the main thread that accesses the
-         * store to reload the data in the specified category.
+         * Called when a category has been changed by an external process. Note that this method
+         * will be called on a timer thread and because access to the store is not thread safe,
+         * this callback should simply notify the main thread that accesses the store to reload the
+         * data in the specified category.
          */
         public void categoryUpdated (Category category);
     }
@@ -47,26 +46,24 @@ public abstract class ItemStore
     public abstract Collection<Category> getCategories ();
 
     /**
-     * Returns a list of {@link Item} instances for the specified
-     * category.
+     * Returns a list of {@link Item} instances for the specified category.
      */
     public abstract Collection<Item> getItems (Category category);
 
     /**
-     * Requests that a new category be created with the supplied
-     * configuration.
+     * Requests that a new category be created with the supplied configuration.
      */
     public abstract void createCategory (Category category);
 
     /**
-     * Adds the supplied item to the appropriate category. The repository
-     * should automatically queue up a flush.
+     * Adds the supplied item to the appropriate category. The repository should automatically
+     * queue up a flush.
      */
     public abstract void addItem (Item item);
 
     /**
-     * Removes the specified item from the appropriate category. The
-     * repository should automatically queue up a flush.
+     * Removes the specified item from the appropriate category. The repository should
+     * automatically queue up a flush.
      */
     public abstract void deleteItem (Item item);
 
@@ -76,8 +73,8 @@ public abstract class ItemStore
     public abstract int getItemIndex (Item item);
 
     /**
-     * Called by an item when it is modified. The repository will mark the
-     * appropriate category as modified and queue up a flush.
+     * Called by an item when it is modified. The repository will mark the appropriate category as
+     * modified and queue up a flush.
      */
     public void itemModified (Item item)
     {
@@ -85,17 +82,15 @@ public abstract class ItemStore
     }
 
     /**
-     * Called when a category is modified (meaning its name was changed).
-     * The repository should mark the category as modified and queue up a
-     * flush.
+     * Called when a category is modified (meaning its name was changed).  The repository should
+     * mark the category as modified and queue up a flush.
      */
     public abstract void categoryModified (Category cat);
 
     /**
-     * Writes all modified categories to the persistent store.
-     * <em>Note:</em> this may run asynchronously with normal item store
-     * methods, so it should take care to isolate data to be flushed in a
-     * synchronized block.
+     * Writes all modified categories to the persistent store.  <em>Note:</em> this may run
+     * asynchronously with normal item store methods, so it should take care to isolate data to be
+     * flushed in a synchronized block.
      */
     public abstract void flushModified ();
 
@@ -118,8 +113,7 @@ public abstract class ItemStore
     }
 
     /**
-     * Cancels any pending flush and immediately flushes all
-     * modifications.
+     * Cancels any pending flush and immediately flushes all modifications.
      */
     public synchronized void shutdown ()
     {
@@ -131,8 +125,8 @@ public abstract class ItemStore
     }
 
     /**
-     * Configures a listener that will be notified when any category is
-     * changed externally by some other process.
+     * Configures a listener that will be notified when any category is changed externally by some
+     * other process.
      */
     public void setStoreListener (StoreListener listener)
     {
@@ -140,8 +134,7 @@ public abstract class ItemStore
     }
 
     /**
-     * Notifies any registered listener that the specified category has
-     * been updated.
+     * Notifies any registered listener that the specified category has been updated.
      */
     protected void categoryUpdated (Category category)
     {
