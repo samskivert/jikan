@@ -3,7 +3,8 @@
 #
 # Proguard configuration file for Jikan
 
--injars ../lib/samskivert.jar(com/samskivert/util/**,com/samskivert/Log.class)
+-injars ../lib/samskivert.jar(!**/*Log4JLogger*,!**/FileUtil.class,
+  com/samskivert/Log.class,com/samskivert/io/StreamUtil.class,com/samskivert/util/*)
 -injars ../lib/google-collect.jar(!META-INF/*)
 -injars ../lib/gdata-core-1.0.jar(!META-INF/*,!**/apt/**)
 -injars ../lib/gdata-client-1.0.jar(!META-INF/*)
@@ -13,12 +14,16 @@
 -injars ../dist/jikan.jar(!META-INF/*)
 
 -libraryjars ../lib/swt.jar
+-libraryjars ../lib/jsr305.jar
+-libraryjars <java.home>/lib/jce.jar
 
 -dontskipnonpubliclibraryclasses
 -dontoptimize
 -dontobfuscate
 
 -outjars ../dist/jikan-pro.jar
+
+-keepattributes *Annotation*
 
 -keep public class * extends java.lang.Enum {
     *;
