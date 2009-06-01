@@ -20,17 +20,20 @@ package com.samskivert.jikan;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Display;
 
+import com.google.common.collect.Lists;
 import com.samskivert.util.Interval;
 import com.samskivert.util.Logger;
+import com.samskivert.util.RunQueue;
 import com.samskivert.util.StringUtil;
 
 import com.samskivert.jikan.data.Category;
+import com.samskivert.jikan.data.GCalSyncer;
 import com.samskivert.jikan.data.ItemJournal;
 import com.samskivert.jikan.data.ItemStore;
 import com.samskivert.jikan.data.PropFileItemStore;
@@ -62,6 +65,9 @@ public class Jikan
     /** Provides access to our items. */
     public static ItemStore store;
 
+    /** A RunQueue that posts runnables to the SWT event processing thread. */
+    public static RunQueue swtQueue;
+
     /**
      * Returns the directory in which we store our local data.
      */
@@ -84,8 +90,21 @@ public class Jikan
 
     public static void main (String[] args)
     {
-	Display display = new Display();
+	final Display display = new Display();
         config = new JikanConfig(display);
+
+        // create our SWT RunQueue
+        swtQueue = new RunQueue() {
+            public void postRunnable (Runnable r) {
+                display.asyncExec(r);
+            }
+            public boolean isDispatchThread () {
+                return (Display.findDisplay(Thread.currentThread()) == display);
+            }
+            public boolean isRunning () {
+                return true;
+            }
+        };
 
         log.info("Jikan running at " + new Date());
 
@@ -100,7 +119,9 @@ public class Jikan
             // create our journal, item store and syncers
             journal = new ItemJournal();
             store = new PropFileItemStore(journal, ldir);
-            // TODO: new GCalSyncer(username, password);
+            if (args.length > 1) {
+                new GCalSyncer(journal, args[0], args[1]);
+            }
             // now initialize our journal and process pending events
             journal.init(ldir);
         } catch (IOException ioe) {
@@ -116,7 +137,7 @@ public class Jikan
         }
 
         // schedule our next date tick
-        scheduleDateTick(display);
+        scheduleDateTick();
 
         // this handles the main user interface
         shell = new JikanShell(display);
@@ -129,7 +150,7 @@ public class Jikan
         store.shutdown();
     }
 
-    protected static void scheduleDateTick (final Display display)
+    protected static void scheduleDateTick ()
     {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, 1);
@@ -140,24 +161,20 @@ public class Jikan
 
         // schedule an interval to expire one second after midnight
         long dt = cal.getTime().getTime() - System.currentTimeMillis() + 1000;
-        new Interval() {
+        new Interval(swtQueue) {
             public void expired () {
-                display.asyncExec(new java.lang.Runnable() {
-                    public void run () {
-                        fireDateTick(display);
-                    }
-                });
+                fireDateTick();
             }
         }.schedule(dt);
     }
 
-    protected static void fireDateTick (Display display)
+    protected static void fireDateTick ()
     {
         for (DateDisplay dd : _displays) {
             dd.dateChanged();
         }
-        scheduleDateTick(display);
+        scheduleDateTick();
     }
 
-    protected static ArrayList<DateDisplay> _displays = new ArrayList<DateDisplay>();
+    protected static List<DateDisplay> _displays = Lists.newArrayList();
 }

@@ -98,7 +98,7 @@ public class Event extends Item
 
     /**
      * Returns the duration of this event which will be in minutes if the event has a date and
-     * time, days if the event has only a date (it's an "all day" event.
+     * time, days if the event has only a date (it's an "all day" event).
      */
     public int getDuration ()
     {

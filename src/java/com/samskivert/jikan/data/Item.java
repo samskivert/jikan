@@ -18,7 +18,11 @@
 
 package com.samskivert.jikan.data;
 
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
+
+import com.google.common.collect.Maps;
 
 /**
  * Contains information on a particular item.
@@ -38,7 +42,14 @@ public class Item
     public Item (Category category, Properties props, int index)
     {
         this.category = category;
-        _text = props.getProperty("item" + index);
+        String key = "item" + index;
+        _text = props.getProperty(key);
+        for (Enumeration<?> e = props.propertyNames(); e.hasMoreElements(); ) {
+            String pname = e.nextElement().toString();
+            if (pname.startsWith(key + ".ext.")) {
+                _exids.put(pname.substring(key.length()+5), props.getProperty(pname));
+            }
+        }
     }
 
     public String getText ()
@@ -50,6 +61,19 @@ public class Item
     {
         if (!text.equals(_text)) {
             _text = text;
+            notifyUpdated();
+        }
+    }
+
+    public String getExternalId (String source)
+    {
+        return _exids.get(source);
+    }
+
+    public void setExternalId (String source, String id)
+    {
+        String oid = _exids.put(source, id);
+        if (!id.equals(oid)) {
             notifyUpdated();
         }
     }
@@ -80,9 +104,14 @@ public class Item
 
     protected void store (Properties props, int index)
     {
-        props.setProperty("item" + index, _text);
+        String key = "item" + index;
+        props.setProperty(key, _text);
+        for (Map.Entry<String, String> entry : _exids.entrySet()) {
+            props.setProperty(key + ".ext." + entry.getKey(), entry.getValue());
+        }
     }
 
     protected String _text;
+    protected Map<String, String> _exids = Maps.newHashMap();
     protected ItemJournal _journal;
 }
