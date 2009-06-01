@@ -164,7 +164,8 @@ public class Jikan
         config.dispose();
 	display.dispose();
 
-        // shut down our item store
+        // shut down our various bits
+        gsyncer.shutdown();
         store.shutdown();
     }
 

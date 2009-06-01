@@ -54,20 +54,25 @@ public abstract class GetCredsDialog
 
         final Text utext = new Text(shell, SWT.SINGLE);
         utext.setText(getDefaultUsername());
-        utext.setLayoutData(new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false));
+        GridData gd = new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false);
+        gd.widthHint = 150;
+        utext.setLayoutData(gd);
 
         Label plabel = new Label(shell, SWT.LEFT);
         plabel.setText("Password:");
         plabel.setLayoutData(new GridData(SWT.RIGHT, SWT.DEFAULT, false, false));
 
         final Text ptext = new Text(shell, SWT.SINGLE | SWT.PASSWORD);
-        ptext.setLayoutData(new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false));
+        gd = new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false);
+        gd.widthHint = 150;
+        ptext.setLayoutData(gd);
 
         Button cancel = new Button(shell, 0);
         cancel.setText("Cancel");
 
         Button logon = new Button(shell, 0);
         logon.setText("Logon");
+        logon.setLayoutData(new GridData(SWT.RIGHT, SWT.DEFAULT, false, false));
 
         cancel.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected (SelectionEvent e) {

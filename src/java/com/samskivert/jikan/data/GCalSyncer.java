@@ -88,6 +88,11 @@ public class GCalSyncer
 //         }
     }
 
+    public void shutdown ()
+    {
+        _invoker.shutdown();
+    }
+
     // from interface ItemJournal.Listener
     public String getId ()
     {
