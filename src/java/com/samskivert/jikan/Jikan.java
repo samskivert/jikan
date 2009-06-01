@@ -37,6 +37,7 @@ import com.samskivert.jikan.data.GCalSyncer;
 import com.samskivert.jikan.data.ItemJournal;
 import com.samskivert.jikan.data.ItemStore;
 import com.samskivert.jikan.data.PropFileItemStore;
+import com.samskivert.jikan.ui.GetCredsDialog;
 import com.samskivert.jikan.ui.JikanShell;
 
 /**
@@ -115,19 +116,19 @@ public class Jikan
             }
         }
 
+        final GCalSyncer gsyncer;
         try {
             // create our journal, item store and syncers
             journal = new ItemJournal();
             store = new PropFileItemStore(journal, ldir);
-            if (args.length > 1) {
-                new GCalSyncer(journal, args[0], args[1]);
-            }
+            gsyncer = new GCalSyncer(journal);
             // now initialize our journal and process pending events
             journal.init(ldir);
         } catch (IOException ioe) {
+            // TODO: report the error via the UI
             log.warning("Error initializing.", ioe);
-            // TODO: report the error
             System.exit(255);
+            return;
         }
 
         // make sure we have our default category
@@ -141,6 +142,23 @@ public class Jikan
 
         // this handles the main user interface
         shell = new JikanShell(display);
+
+        // display a logon dialog for the Gcal syncer
+        new GetCredsDialog(shell.getShell(), "Logon to Google Calendar:") {
+            protected String getDefaultUsername () {
+                return ""; // TODO
+            }
+            protected void onLogon (String username, String password) {
+                try {
+                    gsyncer.init(username, password);
+                } catch (IOException ioe) {
+                    // TODO: report error via UI
+                    log.warning("Failed to initialize GCal syncer", ioe);
+                }
+            }
+        };
+
+        // finally start everything up and runnin'
         shell.run();
 
         config.dispose();

@@ -47,13 +47,15 @@ import static com.samskivert.jikan.Jikan.log;
 public class GCalSyncer
     implements ItemJournal.Listener
 {
-    public GCalSyncer (ItemJournal journal, String username, String password)
-        throws IOException
+    public GCalSyncer (ItemJournal journal)
     {
-        _username = username;
         _journal = journal;
         _journal.addListener(this);
+    }
 
+    public void init (String username, String password)
+        throws IOException
+    {
         try { // yay for checked exceptions
             _feedURL = new URL(FEED_BASE + username + FEED_SUFFIX);
         } catch (MalformedURLException mue) {
@@ -89,7 +91,7 @@ public class GCalSyncer
     // from interface ItemJournal.Listener
     public String getId ()
     {
-        return GCAL_ID + ":" + _username;
+        return GCAL_ID;
     }
 
     // from interface ItemJournal.Listener
@@ -121,6 +123,12 @@ public class GCalSyncer
 
     protected void eventAdded (final UUID eventId, final Event event)
     {
+        if (event.getExternalId(GCAL_ID) != null) {
+            log.info("Unsynced (with GCal) event added", "event", event);
+            eventUpdated(eventId, event);
+            return;
+        }
+
         _invoker.postUnit(new Invoker.Unit() {
             public boolean invoke () {
                 try {
@@ -141,6 +149,12 @@ public class GCalSyncer
 
     protected void eventUpdated (final UUID eventId, final Event event)
     {
+        if (event.getExternalId(GCAL_ID) == null) {
+            log.info("Unsynced (with GCal) event updated", "event", event);
+            eventAdded(eventId, event);
+            return;
+        }
+
         _invoker.postUnit(new Invoker.Unit() {
             public boolean invoke () {
                 try {
@@ -161,6 +175,11 @@ public class GCalSyncer
 
     protected void eventDeleted (final UUID eventId, final Event event)
     {
+        if (event.getExternalId(GCAL_ID) == null) {
+            log.info("Unsynced (with GCal) event deleted", "event", event);
+            return;
+        }
+
         _invoker.postUnit(new Invoker.Unit() {
             public boolean invoke () {
                 try {
@@ -216,7 +235,6 @@ public class GCalSyncer
         }
     }
 
-    protected String _username;
     protected ItemJournal _journal;
 
     protected URL _feedURL;
