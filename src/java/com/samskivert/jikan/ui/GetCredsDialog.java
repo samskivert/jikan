@@ -99,6 +99,10 @@ public abstract class GetCredsDialog
 
         shell.pack();
         shell.open();
+
+        if (utext.getText().length() > 0) {
+            ptext.forceFocus();
+        }
     }
 
     protected String getDefaultUsername ()

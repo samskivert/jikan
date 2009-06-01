@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import org.eclipse.swt.widgets.Display;
 
@@ -146,10 +147,11 @@ public class Jikan
         // display a logon dialog for the Gcal syncer
         new GetCredsDialog(shell.getShell(), "Logon to Google Calendar:") {
             protected String getDefaultUsername () {
-                return ""; // TODO
+                return _prefs.get("gcal.username", "");
             }
             protected void onLogon (String username, String password) {
                 try {
+                    _prefs.put("gcal.username", username);
                     gsyncer.init(username, password);
                 } catch (IOException ioe) {
                     // TODO: report error via UI
@@ -195,5 +197,6 @@ public class Jikan
         scheduleDateTick();
     }
 
+    protected static Preferences _prefs = Preferences.userNodeForPackage(Jikan.class);
     protected static List<DateDisplay> _displays = Lists.newArrayList();
 }
