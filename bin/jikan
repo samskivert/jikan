@@ -1,3 +1,12 @@
 #!/bin/sh
 
-`dirname $0`/runjava com.samskivert.jikan.Jikan $*
+ROOT=`dirname $0`
+ROOT=`cd $ROOT/.. ; pwd`
+
+# set up our classpath
+CLASSPATH=$ROOT/dist/classes
+for JAR in $ROOT/lib/*.jar; do
+    CLASSPATH=$CLASSPATH:$JAR
+done
+
+exec java -classpath $CLASSPATH com.samskivert.jikan.Jikan $*
