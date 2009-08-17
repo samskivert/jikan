@@ -47,7 +47,7 @@ public class EditableLabel extends Composite
 
         _label = new Label(this, 0);
         _label.addMouseListener(_mlistener);
-        _text = new Text(this, SWT.SINGLE|SWT.BORDER);
+        _text = new Text(this, SWT.SINGLE);
         _text.addKeyListener(_klistener);
         _text.setVisible(false);
         _text.addFocusListener(_flistener);
