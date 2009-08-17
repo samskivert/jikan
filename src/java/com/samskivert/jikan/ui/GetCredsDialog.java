@@ -37,7 +37,7 @@ public abstract class GetCredsDialog
 {
     public GetCredsDialog (Shell parent, String info)
     {
-        final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+        final Shell shell = new Shell(parent, SWT.DIALOG_TRIM|SWT.APPLICATION_MODAL);
         shell.setText("Login");
 
         GridLayout gl = new GridLayout();
@@ -52,7 +52,7 @@ public abstract class GetCredsDialog
         ulabel.setText("Username:");
         ulabel.setLayoutData(new GridData(SWT.RIGHT, SWT.DEFAULT, false, false));
 
-        final Text utext = new Text(shell, SWT.SINGLE);
+        final Text utext = new Text(shell, SWT.SINGLE|SWT.BORDER);
         utext.setText(getDefaultUsername());
         GridData gd = new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false);
         gd.widthHint = 150;
@@ -62,7 +62,7 @@ public abstract class GetCredsDialog
         plabel.setText("Password:");
         plabel.setLayoutData(new GridData(SWT.RIGHT, SWT.DEFAULT, false, false));
 
-        final Text ptext = new Text(shell, SWT.SINGLE | SWT.PASSWORD);
+        final Text ptext = new Text(shell, SWT.SINGLE|SWT.BORDER|SWT.PASSWORD);
         gd = new GridData(SWT.DEFAULT, SWT.DEFAULT, true, false);
         gd.widthHint = 150;
         ptext.setLayoutData(gd);

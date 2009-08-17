@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import com.samskivert.jikan.ui.PrefsDialog;
+
 import org.eclipse.swt.widgets.Display;
 
 import com.google.common.collect.Lists;
@@ -55,6 +57,9 @@ public class Jikan
     /** We dispatch our log messages through this logger. */
     public static Logger log = Logger.getLogger("jikan");
 
+    /** Provides access to our preferences. */
+    public static Preferences prefs = Preferences.userNodeForPackage(Jikan.class);
+
     /** Provides access to all of our configuration. */
     public static JikanConfig config;
 
@@ -69,18 +74,6 @@ public class Jikan
 
     /** A RunQueue that posts runnables to the SWT event processing thread. */
     public static RunQueue swtQueue;
-
-    /**
-     * Returns the directory in which we store our local data.
-     */
-    public static String localDataDir ()
-    {
-        String home = System.getProperty("user.home");
-        if (!StringUtil.isBlank(home)) {
-            home += File.separator;
-        }
-        return home + ".jikan";
-    }
 
     /**
      * Registers an entity to be notified when the date changes.
@@ -110,21 +103,57 @@ public class Jikan
 
         log.info("Jikan running at " + new Date());
 
-        File ldir = new File(localDataDir());
-        if (!ldir.exists()) {
-            if (!ldir.mkdir()) {
-                log.warning("Unable to create '" + ldir + "'.");
+        // determine where we store our data
+        String ldir = prefs.get("datadir", "");
+        if (StringUtil.isBlank(ldir)) {
+            PrefsDialog pdialog = new PrefsDialog(display);
+            pdialog.run();
+            ldir = prefs.get("datadir", "");
+        }
+
+        File localDataDir = new File(ldir);
+        if (!localDataDir.exists()) {
+            if (!localDataDir.mkdir()) {
+                log.warning("Unable to create '" + localDataDir + "'.");
+                System.exit(255);
             }
         }
 
+        startApp(display, localDataDir);
+
+        // shut down our SWT bits
+        config.dispose();
+	display.dispose();
+    }
+
+    protected static void scheduleDateTick ()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        // schedule an interval to expire one second after midnight
+        long dt = cal.getTime().getTime() - System.currentTimeMillis() + 1000;
+        new Interval(swtQueue) {
+            public void expired () {
+                fireDateTick();
+            }
+        }.schedule(dt);
+    }
+
+    protected static void startApp (Display display, File localDataDir)
+    {
         final GCalSyncer gsyncer;
         try {
             // create our journal, item store and syncers
             journal = new ItemJournal();
-            store = new PropFileItemStore(journal, ldir);
+            store = new PropFileItemStore(journal, localDataDir);
             gsyncer = new GCalSyncer(journal);
             // now initialize our journal and process pending events
-            journal.init(ldir);
+            journal.init(localDataDir);
         } catch (IOException ioe) {
             // TODO: report the error via the UI
             log.warning("Error initializing.", ioe);
@@ -147,11 +176,11 @@ public class Jikan
         // display a logon dialog for the Gcal syncer
         new GetCredsDialog(shell.getShell(), "Logon to Google Calendar:") {
             protected String getDefaultUsername () {
-                return _prefs.get("gcal.username", "");
+                return prefs.get("gcal.username", "");
             }
             protected void onLogon (String username, String password) {
                 try {
-                    _prefs.put("gcal.username", username);
+                    prefs.put("gcal.username", username);
                     gsyncer.init(username, password);
                 } catch (IOException ioe) {
                     // TODO: report error via UI
@@ -163,30 +192,9 @@ public class Jikan
         // finally start everything up and runnin'
         shell.run();
 
-        config.dispose();
-	display.dispose();
-
         // shut down our various bits
         gsyncer.shutdown();
         store.shutdown();
-    }
-
-    protected static void scheduleDateTick ()
-    {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        // schedule an interval to expire one second after midnight
-        long dt = cal.getTime().getTime() - System.currentTimeMillis() + 1000;
-        new Interval(swtQueue) {
-            public void expired () {
-                fireDateTick();
-            }
-        }.schedule(dt);
     }
 
     protected static void fireDateTick ()
@@ -197,6 +205,5 @@ public class Jikan
         scheduleDateTick();
     }
 
-    protected static Preferences _prefs = Preferences.userNodeForPackage(Jikan.class);
     protected static List<DateDisplay> _displays = Lists.newArrayList();
 }

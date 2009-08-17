@@ -48,7 +48,7 @@ public class NewCategoryDialog
         gl.numColumns = 3;
         _shell.setLayout(gl);
 
-        _text = new Text(_shell, SWT.SINGLE);
+        _text = new Text(_shell, SWT.SINGLE|SWT.BORDER);
         GridData gd = new GridData();
         gd.horizontalAlignment = GridData.FILL;
         gd.grabExcessHorizontalSpace = true;
