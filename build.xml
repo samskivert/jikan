@@ -27,6 +27,7 @@
     <file name="lib/commons-codec.jar"/>
     <file name="lib/getdown.jar"/>
     <file name="lib/google-collect.jar"/>
+    <file name="lib/jarbundler-1.2.jar"/>
     <file name="lib/samskivert.jar"/>
     <file name="lib/swt.jar"/>
   </filelist>
@@ -262,11 +263,71 @@
       <arg line="$0"/>
     </exec>
     <echo level="info">${make.output}</echo>
-
-    <delete dir="${linst.dir}"/>
   </target>
 
-  <target name="installers" depends="linux_installer">
+  <!-- creates the mac jikan (getdown) installer -->
+  <target name="mac_installer">
+    <property name="macinst.dir" value="${deploy.dir}/mac_installer"/>
+    <property name="jdir" value="Contents/Resources/Java"/>
+    <delete dir="${macinst.dir}"/>
+    <mkdir dir="${macinst.dir}"/>
+
+    <!-- be sure the app base directory is empty -->
+    <taskdef name="jarbundler" classpathref="clazzpath"
+             classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
+
+    <jarbundler dir="${macinst.dir}" name="${app.name}" 
+      mainclass="com.threerings.getdown.launcher.Getdown" 
+      workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+      jars="lib/getdown-pro.jar"
+      vmoptions="-Dappdir=."
+      version="1.0"
+      jvmversion="1.6+"
+      infostring="${app.ident} 1.0"
+      icon="lib/installers/jikan.icns"
+      stubfile="lib/installers/JavaApplicationStub"/>
+
+    <copy todir="${macinst.dir}/${app.name}.app/${jdir}/">
+      <fileset dir="lib/installers" includes="background.png"/>
+      <fileset dir="etc" includes="getdown.txt"/>
+    </copy>
+
+    <!-- prepare for imaging -->
+    <copy file="lib/installers/DS_Store" tofile="${macinst.dir}/.DS_Store"/>
+    <mkdir dir="${macinst.dir}/.background"/>
+    <copy todir="${macinst.dir}/.background/" file="lib/installers/banner.png"/>
+
+    <!-- fix permissions, no matter how silly the umask made them -->
+    <exec executable="/bin/chmod">
+      <arg line="-R"/>
+      <arg line="u+w,go-w,a+r"/>
+      <arg line="'${macinst.dir}'"/>
+    </exec>
+    <exec executable="/bin/chmod">
+      <arg line="a+x"/>
+      <arg line="'${macinst.dir}/${app.name}.app/Contents/MacOS/JavaApplicationStub'"/>
+    </exec>
+
+    <!-- build our iso disk image -->
+    <exec executable="mkisofs" failonerror="true">
+      <arg line="-quiet"/>
+      <arg line="-hide-rr-moved"/>
+      <arg line="-hide-joliet"/>
+      <arg line=".rr_moved"/>
+      <arg line="-uid"/>
+      <arg line="0"/>
+      <arg line="-gid"/>
+      <arg line="0"/>
+      <arg line="-J"/>
+      <arg line="-V"/>
+      <arg line="'${app.name}'"/>
+      <arg line="-o"/>
+      <arg line="'${deploy.dir}/${app.ident}-install.dmg'"/>
+      <arg file="${macinst.dir}"/>
+    </exec>
+  </target>
+
+  <target name="installers" depends="getdown,linux_installer,mac_installer">
   </target>
 
   <!-- installs the getdown client and latest installers in the web document tree -->

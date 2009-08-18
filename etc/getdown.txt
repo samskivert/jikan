@@ -31,7 +31,7 @@ code = [linux] code/swt-linux.jar
 # resource = progress.png
 
 # Parameters passed to the JVM
-# jvmarg = -Xmx256M
+jvmarg = [mac os x] -XstartOnFirstThread
 
 # The main Java class
 class = com.samskivert.jikan.Jikan
