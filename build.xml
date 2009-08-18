@@ -25,6 +25,11 @@
   <!-- we need these libraries to build -->
   <filelist dir="." id="build.libs">
     <file name="lib/commons-codec.jar"/>
+    <file name="lib/gdata-calendar-2.0.jar"/>
+    <file name="lib/gdata-calendar-meta-2.0.jar"/>
+    <file name="lib/gdata-client-1.0.jar"/>
+    <file name="lib/gdata-client-meta-1.0.jar"/>
+    <file name="lib/gdata-core-1.0.jar"/>
     <file name="lib/getdown.jar"/>
     <file name="lib/google-collect.jar"/>
     <file name="lib/jarbundler-2.1.0.jar"/>
@@ -34,11 +39,6 @@
 
   <!-- and these libraries to build and at runtime -->
   <filelist dir="." id="runtime.libs">
-    <file name="lib/gdata-calendar-2.0.jar"/>
-    <file name="lib/gdata-calendar-meta-2.0.jar"/>
-    <file name="lib/gdata-client-1.0.jar"/>
-    <file name="lib/gdata-client-meta-1.0.jar"/>
-    <file name="lib/gdata-core-1.0.jar"/>
     <file name="lib/jsr305.jar"/>
   </filelist>
 
@@ -171,7 +171,7 @@
       <fileset dir="etc" includes="getdown.txt"/>
     </copy>
 
-    <copy todir="${linst.dir}" file="lib/installers/finish_install" encoding="UTF-8">
+    <copy todir="${linst.dir}" file="lib/installers/finish_install" encoding="UTF-8" overwrite="true">
       <filterset>
         <filter token="app_ident" value="${app.ident}"/>
         <filter token="app_name" value="${app.name}"/>
