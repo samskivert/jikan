@@ -1,0 +1,37 @@
+#
+# $Id$
+#
+# Jikan deployment descriptor
+
+# General information
+appbase = http://samskivert.com/code/jikan/getdown
+
+# Configure the update UI
+ui.name = Jikan
+ui.background_image = background.png
+# ui.progress_image = progress.png
+ui.progress = 17, 321, 458, 22
+ui.progress_bar = 663333
+ui.progress_text = FFFFFF
+ui.status = 57, 245, 373, 68
+ui.status_text = FFFFFF
+
+# These all go into the classpath
+code = code/jikan-pro.jar
+code = code/jsr305.jar
+code = [windows] code/swt-win32.jar
+code = [mac os x] code/swt-macosx.jar
+code = [linux] code/swt-linux.jar
+
+# Getdown doesn't go in the classpath; this is just for auto-upgrade
+# resource = code/getdown-pro-new.jar
+
+# Our media resources
+# resource = background.png
+# resource = progress.png
+
+# Parameters passed to the JVM
+# jvmarg = -Xmx256M
+
+# The main Java class
+class = com.samskivert.jikan.Jikan

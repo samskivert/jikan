@@ -22,9 +22,28 @@
   <property name="copyright.holder" value="Michael Bayne"/>
   <property name="copy.post"    value="All Rights Reserved."/>
 
+  <!-- we need these libraries to build -->
+  <filelist dir="." id="build.libs">
+    <file name="lib/commons-codec.jar"/>
+    <file name="lib/getdown.jar"/>
+    <file name="lib/google-collect.jar"/>
+    <file name="lib/samskivert.jar"/>
+    <file name="lib/swt.jar"/>
+  </filelist>
+
+  <!-- and these libraries to build and at runtime -->
+  <filelist dir="." id="runtime.libs">
+    <file name="lib/gdata-calendar-2.0.jar"/>
+    <file name="lib/gdata-calendar-meta-2.0.jar"/>
+    <file name="lib/gdata-client-1.0.jar"/>
+    <file name="lib/gdata-client-meta-1.0.jar"/>
+    <file name="lib/gdata-core-1.0.jar"/>
+    <file name="lib/jsr305.jar"/>
+  </filelist>
+
   <!-- declare our classpath -->
   <path id="clazzpath">
-    <fileset dir="lib" includes="**/*.jar"/>
+    <fileset dir="${deploy.dir}/lib" includes="**/*.jar"/>
     <pathelement location="${deploy.dir}/classes"/>
   </path>
 
@@ -38,7 +57,13 @@
       <fileset dir="${src.dir}" includes="**/*.png"/>
       <fileset dir="${src.dir}" includes="**/*.properties"/>
     </copy>
-    <!-- Let everyone know if this is Darwin, so that they can do special magic -->
+    <!-- copy our build dependencies into place -->
+    <mkdir dir="${deploy.dir}/lib"/>
+    <copy todir="${deploy.dir}/lib" flatten="true">
+      <filelist refid="build.libs"/>
+      <filelist refid="runtime.libs"/>
+    </copy>
+    <!-- note whether we're running on Darwin -->
     <condition property="platform.darwin">
       <and><os family="mac"/><os family="unix"/></and>
     </condition>
@@ -98,6 +123,36 @@
     <proguard configuration="etc/jikan.pro">
       <libraryjar name="${runtime.jar}"/>
     </proguard>
+  </target>
+
+  <!-- prepares our Getdown distribution -->
+  <target name="getdown" depends="proguard">
+    <mkdir dir="${deploy.dir}/getdown"/>
+    <mkdir dir="${deploy.dir}/getdown/code"/>
+    <copy todir="${deploy.dir}/getdown">
+      <fileset dir="etc" includes="getdown.txt"/>
+      <fileset dir="lib" includes="getdown-pro.jar"/>
+      <fileset dir="lib" includes="background.png"/>
+    </copy>
+
+    <!-- copy our jar file and runtime dependencies into place -->
+    <copy todir="${deploy.dir}/getdown/code" flatten="true">
+      <fileset dir="${deploy.dir}" includes="jikan-pro.jar"/>
+      <filelist refid="build.libs"/>
+      <filelist refid="runtime.libs"/>
+      <fileset dir="lib/native" includes="swt-*.jar"/>
+    </copy>
+
+    <!-- generate the getdown digest file -->
+    <taskdef name="digest" classname="com.threerings.getdown.tools.DigesterTask">
+      <classpath>
+        <pathelement path="${deploy.dir}/lib/commons-codec.jar"/>
+        <pathelement path="${deploy.dir}/lib/getdown.jar"/>
+        <pathelement path="${deploy.dir}/lib/samskivert.jar"/>
+      </classpath>
+    </taskdef>
+    <property file="${cert_dir}/certificate.properties"/>
+    <digest appdir="${deploy.dir}/getdown"/>
   </target>
 
   <!-- creates our Mac application -->
@@ -172,36 +227,10 @@
     </exec>
   </target>
 
-  <!-- creates the JNLP directory, populates it -->
-  <target name="install" depends="proguard">
+  <!-- installs the getdown client in the web document tree -->
+  <target name="install" depends="getdown">
     <copy todir="${web_dir}">
-      <fileset dir="dist" includes="jikan-pro.jar"/>
-      <fileset dir="lib/native" includes="*.jar"/>
+      <fileset dir="${deploy.dir}" includes="getdown"/>
     </copy>
-
-    <!-- create the JNLP file -->
-    <copy todir="${web_dir}">
-      <fileset dir="etc" includes="jikan.jnlp"/>
-      <filterset>
-        <filter token="application_uri" value="${application_uri}"/>
-      </filterset>
-    </copy>
-
-    <!-- sign the jar files -->
-    <signjar keystore="${sign.keystore}" alias="${sign.alias}"
-      storepass="${sign.storepass}" lazy="true">
-      <fileset dir="${web_dir}" includes="*.jar"/>
-    </signjar>
-  </target>
-
-  <!-- recompiles the main application installs and resigns it -->
-  <target name="quickinstall" depends="proguard">
-    <copy todir="${web_dir}">
-      <fileset dir="dist" includes="jikan-pro.jar"/>
-    </copy>
-    <signjar keystore="${sign.keystore}" alias="${sign.alias}"
-      storepass="${sign.storepass}" lazy="true">
-      <fileset dir="${web_dir}" includes="jikan-pro.jar"/>
-    </signjar>
   </target>
 </project>
