@@ -105,7 +105,7 @@
 
   <!-- builds our distribution files -->
   <target name="dist" depends="prepare,compile">
-    <jar destfile="${deploy.dir}/${dist.jar}" manifest="lib/manifest.mf"
+    <jar destfile="${deploy.dir}/${dist.jar}" manifest="etc/manifest.mf"
          basedir="${deploy.dir}/classes"/>
   </target>
 
@@ -154,78 +154,6 @@
     </taskdef>
     <property file="${cert_dir}/certificate.properties"/>
     <digest appdir="${deploy.dir}/getdown"/>
-  </target>
-
-  <!-- creates our Mac application -->
-  <target name="macapp" depends="proguard">
-    <!-- be sure the app base directory is empty -->
-    <delete dir="${deploy.dir}/${app.name}.app"/>
-
-    <!-- create the application directory with jarbundler -->
-<!-- doesn't work due to SWT startOnFirstThread bullshit
-    <taskdef name="jarbundler" classpathref="clazzpath"
-             classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
-    <jarbundler dir="${deploy.dir}" name="${app.name}" 
-                mainclass="com.samskivert.jikan.Jikan" 
-                workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
-                jars="${deploy.dir}/jikan-pro.jar lib/native/swt-macosx.jar"
-                vmoptions="-XstartOnFirstThread -Djava.library.path=."
-                version="${app.version}"
-                jvmversion="1.5+"
-                infostring="${app.name} ${app.version}"
-                icon="etc/jikan.icns"
-                stubfile="etc/JavaApplicationStub"/>
--->
-
-    <!-- create the application directory by hand, yay -->
-    <mkdir dir="${deploy.dir}/${app.name}.app"/>
-    <mkdir dir="${deploy.dir}/${app.name}.app/Contents"/>
-    <mkdir dir="${deploy.dir}/${app.name}.app/Contents/MacOS"/>
-    <mkdir dir="${deploy.dir}/${app.name}.app/Contents/Resources"/>
-    <mkdir dir="${deploy.dir}/${app.name}.app/Contents/Resources/Java"/>
-
-    <!-- copy our bits into place by hand, yay -->
-    <copy todir="${deploy.dir}/${app.name}.app/Contents/" file="etc/Info.plist"/>
-    <copy todir="${deploy.dir}/${app.name}.app/Contents/MacOS" file="etc/run_jikan"/>
-    <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources" file="etc/jikan.icns"/>
-    <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources/Java/">
-      <fileset dir="${deploy.dir}" includes="jikan-pro.jar"/>
-      <fileset dir="lib/native" includes="swt-macosx.jar"/>
-    </copy>
-    <exec executable="/bin/chmod">
-      <arg line="a+x"/>
-      <arg line="'${deploy.dir}/${app.name}.app/Contents/MacOS/run_jikan'"/>
-    </exec>
-
-    <!-- copy our native libraries into place -->
-    <copy todir="${deploy.dir}/${app.name}.app/Contents/Resources/Java/">
-      <fileset dir="lib/native" includes="*.jnilib"/>
-    </copy>
-  </target>
-
-  <!-- creates the Mac installer image -->
-  <target name="macimg" depends="macapp">
-    <!-- Prepare for imaging -->
-    <copy file="${ds_store}" tofile="${img.dir}/.DS_Store"/>
-    <mkdir dir="${img.dir}/.background"/>
-    <copy todir="${img.dir}/.background/" file="banner.png"/>
-
-    <copy todir="${img.dir}/">
-       <fileset dir="${deploy.dir}">
-         <include name="${app.name}/**"/>
-       </fileset>
-    </copy>
-
-    <!-- Fix permissions, no matter how silly the umask made them -->
-    <exec executable="/bin/chmod">
-      <arg line="-R"/>
-      <arg line="u+w,go-w,a+r"/>
-      <arg line="'${img.dir}'"/>
-    </exec>
-    <exec executable="/bin/chmod">
-      <arg line="a+x"/>
-      <arg line="'${img.dir}/${app.name}.app/Contents/MacOS/JavaApplicationStub'"/>
-    </exec>
   </target>
 
   <!-- creates the linux jikan (getdown) installer -->
