@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Completes the installation of the Jikan launcher on Linux.
+
+echo
+echo "--------------------------------"
+echo " Welcome to the Jikan installer!"
+echo "--------------------------------"
+
+# ask them where they want to install the app
+DEFINSTALLDIR=$HOME/jikan
+INSTALLDIR=
+while [ -z "$INSTALLDIR" ]; do
+    echo
+    echo "Where would you like to install Jikan?"
+    echo -n "[$DEFINSTALLDIR] "
+    read REPLY
+    if [ -z "$REPLY" ]; then
+        REPLY=$DEFINSTALLDIR
+    fi
+    if [ \! -d $REPLY ]; then
+        echo "Creating directory '$REPLY'..."
+        mkdir -p $REPLY
+        if [ \! -d $REPLY ]; then
+            echo "Unable to create directory '$REPLY'."
+        else
+            INSTALLDIR=$REPLY
+            break
+        fi
+    else
+        INSTALLDIR=$REPLY
+        break
+    fi
+done
+
+# copy our files to the install directory
+cp -p * $INSTALLDIR
+rm $INSTALLDIR/finish_install
+
+# attempt to locate their desktop directory
+DESKTOP=$HOME/Desktop
+if [ \! -d $DESKTOP ]; then
+    DESKTOP=$HOME/.desktop
+fi
+if [ \! -d $DESKTOP ]; then
+    DESKTOP=$INSTALLDIR
+    echo
+    echo "Note: Unable to locate your desktop directory. Please move"
+    echo "'$DESKTOP/Jikan.desktop' to your desktop"
+    echo "directory if you wish to launch Jikan from a desktop icon."
+fi
+
+cat > "$DESKTOP/Jikan.desktop" <<EOF
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Jikan
+Exec=java -jar $INSTALLDIR/getdown-pro.jar $INSTALLDIR
+Icon=$INSTALLDIR/icon.png
+Terminal=false
+MultipleArgs=false
+Type=Application
+Categories=Application;
+EOF
+
+echo
+echo "-------------------------------------------------------"
+echo "Jikan has been successfully installed!"
+echo "Run it by double clicking the icon on your desktop."
+echo
+echo "If you wish to uninstall Jikan later, simply delete the"
+echo "$INSTALLDIR directory."
+echo "-------------------------------------------------------"

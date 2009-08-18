@@ -234,4 +234,41 @@
       <fileset dir="${deploy.dir}" includes="getdown/**"/>
     </copy>
   </target>
+
+  <target name="linux_installer">
+    <property name="linst.dir" value="${deploy.dir}/linux_installer"/>
+    <mkdir dir="${linst.dir}"/>
+
+    <copy todir="${linst.dir}">
+      <fileset dir="lib">
+        <include name="getdown-pro.jar"/>
+        <include name="icon.png"/>
+        <include name="background.png"/>
+        <include name="finish_install"/>
+      </fileset>
+    </copy>
+
+    <echo file="${linst.dir}/getdown.txt"
+          message="appbase = http://samskivert.com/code/jikan/getdown"/>
+
+    <exec executable="chmod" failonerror="true">
+      <arg line="a+rx"/>
+      <arg line="${linst.dir}/finish_install"/>
+    </exec>
+
+    <exec executable="makeself" failonerror="true" outputproperty="make.output">
+      <arg line="${linst.dir}"/>
+      <arg line="${deploy.dir}/jikan-install.bin"/>
+      <arg line="jikan"/>
+      <arg line="./finish_install"/>
+      <arg line="$0"/>
+    </exec>
+    <echo level="info">${make.output}</echo>
+
+    <!--<delete dir="${linst.dir}"/>-->
+  </target>
+
+  <target name="installers" depends="linux_installer">
+  </target>
+
 </project>
