@@ -23,23 +23,23 @@
   <property name="copy.post"    value="All Rights Reserved."/>
 
   <!-- we need these libraries to build -->
-  <filelist dir="." id="build.libs">
-    <file name="lib/commons-codec.jar"/>
-    <file name="lib/gdata-calendar-2.0.jar"/>
-    <file name="lib/gdata-calendar-meta-2.0.jar"/>
-    <file name="lib/gdata-client-1.0.jar"/>
-    <file name="lib/gdata-client-meta-1.0.jar"/>
-    <file name="lib/gdata-core-1.0.jar"/>
-    <file name="lib/getdown.jar"/>
-    <file name="lib/google-collect.jar"/>
-    <file name="lib/jarbundler-2.1.0.jar"/>
-    <file name="lib/samskivert.jar"/>
-    <file name="lib/swt.jar"/>
+  <filelist dir="lib" id="build.libs">
+    <file name="commons-codec.jar"/>
+    <file name="gdata-calendar-2.0.jar"/>
+    <file name="gdata-calendar-meta-2.0.jar"/>
+    <file name="gdata-client-1.0.jar"/>
+    <file name="gdata-client-meta-1.0.jar"/>
+    <file name="gdata-core-1.0.jar"/>
+    <file name="getdown.jar"/>
+    <file name="google-collect.jar"/>
+    <file name="jarbundler-2.1.0.jar"/>
+    <file name="samskivert.jar"/>
+    <file name="swt.jar"/>
   </filelist>
 
   <!-- and these libraries to build and at runtime -->
-  <filelist dir="." id="runtime.libs">
-    <file name="lib/jsr305.jar"/>
+  <filelist dir="lib" id="runtime.libs">
+    <file name="jsr305.jar"/>
   </filelist>
 
   <!-- declare our classpath -->
@@ -139,7 +139,6 @@
     <!-- copy our jar file and runtime dependencies into place -->
     <copy todir="${deploy.dir}/getdown/code" flatten="true">
       <fileset dir="${deploy.dir}" includes="jikan-pro.jar"/>
-      <filelist refid="build.libs"/>
       <filelist refid="runtime.libs"/>
       <fileset dir="lib/native" includes="swt-*.jar"/>
     </copy>
