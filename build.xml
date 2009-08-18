@@ -227,14 +227,7 @@
     </exec>
   </target>
 
-  <!-- installs the getdown client in the web document tree -->
-  <target name="install" depends="getdown">
-    <delete dir="${web_dir}/getdown"/>
-    <copy todir="${web_dir}">
-      <fileset dir="${deploy.dir}" includes="getdown/**"/>
-    </copy>
-  </target>
-
+  <!-- creates the linux jikan (getdown) installer -->
   <target name="linux_installer">
     <property name="linst.dir" value="${deploy.dir}/linux_installer"/>
     <mkdir dir="${linst.dir}"/>
@@ -246,10 +239,15 @@
         <include name="background.png"/>
         <include name="finish_install"/>
       </fileset>
+      <fileset dir="etc" includes="getdown.txt"/>
     </copy>
 
-    <echo file="${linst.dir}/getdown.txt"
-          message="appbase = http://samskivert.com/code/jikan/getdown"/>
+    <copy todir="${linst.dir}" file="lib/finish_install" overwrite="true" encoding="UTF-8">
+      <filterset>
+        <filter token="app_ident" value="${app.ident}"/>
+        <filter token="app_name" value="${app.name}"/>
+      </filterset>
+    </copy>
 
     <exec executable="chmod" failonerror="true">
       <arg line="a+rx"/>
@@ -258,17 +256,26 @@
 
     <exec executable="makeself" failonerror="true" outputproperty="make.output">
       <arg line="${linst.dir}"/>
-      <arg line="${deploy.dir}/jikan-install.bin"/>
-      <arg line="jikan"/>
+      <arg line="${deploy.dir}/${app.ident}-install.bin"/>
+      <arg line="${app.ident}"/>
       <arg line="./finish_install"/>
       <arg line="$0"/>
     </exec>
     <echo level="info">${make.output}</echo>
 
-    <!--<delete dir="${linst.dir}"/>-->
+    <delete dir="${linst.dir}"/>
   </target>
 
   <target name="installers" depends="linux_installer">
+  </target>
+
+  <!-- installs the getdown client and latest installers in the web document tree -->
+  <target name="install" depends="getdown,installers">
+    <delete dir="${web_dir}/getdown"/>
+    <copy todir="${web_dir}">
+      <fileset dir="${deploy.dir}" includes="getdown/**"/>
+      <fileset dir="${deploy.dir}" includes="${app.ident}-install.*"/>
+    </copy>
   </target>
 
 </project>

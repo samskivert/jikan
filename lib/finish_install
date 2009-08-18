@@ -6,15 +6,15 @@
 
 echo
 echo "--------------------------------"
-echo " Welcome to the Jikan installer!"
+echo " Welcome to the @app_name@ installer!"
 echo "--------------------------------"
 
 # ask them where they want to install the app
-DEFINSTALLDIR=$HOME/jikan
+DEFINSTALLDIR=$HOME/@app_ident@
 INSTALLDIR=
 while [ -z "$INSTALLDIR" ]; do
     echo
-    echo "Where would you like to install Jikan?"
+    echo "Where would you like to install @app_name@?"
     echo -n "[$DEFINSTALLDIR] "
     read REPLY
     if [ -z "$REPLY" ]; then
@@ -48,14 +48,14 @@ if [ \! -d $DESKTOP ]; then
     DESKTOP=$INSTALLDIR
     echo
     echo "Note: Unable to locate your desktop directory. Please move"
-    echo "'$DESKTOP/Jikan.desktop' to your desktop"
-    echo "directory if you wish to launch Jikan from a desktop icon."
+    echo "'$DESKTOP/@app_name@.desktop' to your desktop"
+    echo "directory if you wish to launch @app_name@ from a desktop icon."
 fi
 
-cat > "$DESKTOP/Jikan.desktop" <<EOF
+cat > "$DESKTOP/@app_name@.desktop" <<EOF
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Name=Jikan
+Name=@app_name@
 Exec=java -jar $INSTALLDIR/getdown-pro.jar $INSTALLDIR
 Icon=$INSTALLDIR/icon.png
 Terminal=false
@@ -66,9 +66,9 @@ EOF
 
 echo
 echo "-------------------------------------------------------"
-echo "Jikan has been successfully installed!"
+echo "@app_name@ has been successfully installed!"
 echo "Run it by double clicking the icon on your desktop."
 echo
-echo "If you wish to uninstall Jikan later, simply delete the"
+echo "If you wish to uninstall @app_name@ later, simply delete the"
 echo "$INSTALLDIR directory."
 echo "-------------------------------------------------------"
