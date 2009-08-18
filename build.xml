@@ -230,8 +230,7 @@
   <!-- installs the getdown client in the web document tree -->
   <target name="install" depends="getdown">
     <delete dir="${web_dir}/getdown"/>
-    <mkdir dir="${web_dir}/getdown"/>
-    <copy todir="${web_dir}/getdown">
+    <copy todir="${web_dir}">
       <fileset dir="${deploy.dir}" includes="getdown/**"/>
     </copy>
   </target>
