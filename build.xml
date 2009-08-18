@@ -233,16 +233,16 @@
     <mkdir dir="${linst.dir}"/>
 
     <copy todir="${linst.dir}">
-      <fileset dir="lib">
-        <include name="getdown-pro.jar"/>
+      <fileset dir="lib/installers">
         <include name="icon.png"/>
         <include name="background.png"/>
         <include name="finish_install"/>
       </fileset>
+      <fileset dir="lib" includes="getdown-pro.jar"/>
       <fileset dir="etc" includes="getdown.txt"/>
     </copy>
 
-    <copy todir="${linst.dir}" file="lib/finish_install" overwrite="true" encoding="UTF-8">
+    <copy todir="${linst.dir}" file="lib/installers/finish_install" encoding="UTF-8">
       <filterset>
         <filter token="app_ident" value="${app.ident}"/>
         <filter token="app_name" value="${app.name}"/>
