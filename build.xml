@@ -27,7 +27,7 @@
     <file name="lib/commons-codec.jar"/>
     <file name="lib/getdown.jar"/>
     <file name="lib/google-collect.jar"/>
-    <file name="lib/jarbundler-1.2.jar"/>
+    <file name="lib/jarbundler-2.1.0.jar"/>
     <file name="lib/samskivert.jar"/>
     <file name="lib/swt.jar"/>
   </filelist>
@@ -202,12 +202,12 @@
 
     <!-- be sure the app base directory is empty -->
     <taskdef name="jarbundler" classpathref="clazzpath"
-             classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
+             classname="net.sourceforge.jarbundler.JarBundler"/>
 
     <jarbundler dir="${macinst.dir}" name="${app.name}" 
       mainclass="com.threerings.getdown.launcher.Getdown" 
+      jar="lib/getdown-pro.jar"
       workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
-      jars="lib/getdown-pro.jar"
       vmoptions="-Dappdir=."
       version="1.0"
       jvmversion="1.6+"
