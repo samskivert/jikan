@@ -245,7 +245,7 @@ public class GCalSyncer
     protected URL _feedURL;
     protected CalendarService _service;
 
-    protected Invoker _invoker = new Invoker("gcal_syncer", Jikan.swtQueue);
+    protected Invoker _invoker = new Invoker("gcal_syncer", new RunQueue.AsExecutor(Jikan.swtQueue));
 
     protected static final String FEED_BASE = "http://www.google.com/calendar/feeds/";
     protected static final String FEED_SUFFIX = "/private/full";
