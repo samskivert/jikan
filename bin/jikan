@@ -5,7 +5,7 @@ ROOT=`cd $ROOT/.. ; pwd`
 
 # set up our classpath
 CLASSPATH=$ROOT/dist/classes
-for JAR in $ROOT/lib/*.jar; do
+for JAR in $ROOT/dist/lib/*.jar; do
     CLASSPATH=$CLASSPATH:$JAR
 done
 
