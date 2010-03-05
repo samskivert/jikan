@@ -72,7 +72,7 @@ public class EventWidget
         gc.drawOval(x, y, size-1, size-1);
         int dx = (size-ext.x)/2, dy = (size-ext.y)/2;
         // yay for random font rendering wackiness!
-        if (RunAnywhere.isLinux()) {
+        if (RunAnywhere.isLinux() || RunAnywhere.isMacOS()) {
             dx += 1;
         }
         gc.drawString(estr, x + dx, y + dy, true);
