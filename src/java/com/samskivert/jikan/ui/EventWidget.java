@@ -70,11 +70,7 @@ public class EventWidget
         gc.fillOval(x, y, size-1, size-1);
         gc.setBackground(obg);
         gc.drawOval(x, y, size-1, size-1);
-        int dx = (size-ext.x)/2, dy = (size-ext.y)/2;
-        // yay for random font rendering wackiness!
-        if (RunAnywhere.isLinux() || RunAnywhere.isMacOS()) {
-            dx += 1;
-        }
+        int dx = (size-ext.x)/2 + 1 /*rando adjust!*/, dy = (size-ext.y)/2;
         gc.drawString(estr, x + dx, y + dy, true);
     }
 
