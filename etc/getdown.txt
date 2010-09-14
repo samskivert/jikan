@@ -21,7 +21,8 @@ code = code/jikan-pro.jar
 code = code/jsr305.jar
 code = [windows] code/swt-win32.jar
 code = [mac os x] code/swt-macosx.jar
-code = [linux] code/swt-linux.jar
+code = [linux-i386] code/swt-linux32.jar
+code = [linux-x86_64, linux-amd64] code/swt-linux64.jar
 
 # Getdown doesn't go in the classpath; this is just for auto-upgrade
 # resource = code/getdown-pro-new.jar
