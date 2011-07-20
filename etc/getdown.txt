@@ -16,6 +16,9 @@ ui.progress_text = FFFFFF
 ui.status = 57, 245, 373, 68
 ui.status_text = FFFFFF
 
+# Allow offline operation
+allow_offline = true
+
 # These all go into the classpath
 code = code/jikan-pro.jar
 code = code/jsr305.jar
